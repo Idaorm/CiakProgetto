@@ -14,9 +14,8 @@ public class UtenteRegistratoDAO {
 
     /**
      * Costruttore DAO.
-     * @param connection Connessione JDBC al database
      */
-    public UtenteRegistratoDAO(Connection connection) {
+    public UtenteRegistratoDAO() {
         this.connection = connection;
     }
 
@@ -40,6 +39,41 @@ public class UtenteRegistratoDAO {
         ps.setBoolean(6, u.isWatchlistVisibility());
 
         ps.executeUpdate();
+    }
+
+    /**
+     * Verifica le credenziali di accesso di un utente.
+     * @param usernameOrEmail username oppure email inseriti dall'utente
+     * @param password password inserita dall'utente
+     * @return UtenteRegistrato se le credenziali sono corrette,
+     *         null altrimenti
+     */
+    public UtenteRegistrato login(String usernameOrEmail, String password) throws SQLException {
+        UtenteRegistrato utente = null;
+
+        String sql = "SELECT * FROM utente WHERE (username=? OR email=?) AND password=?";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, usernameOrEmail);
+            ps.setString(2, usernameOrEmail);
+            ps.setString(3, password);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    utente = new UtenteRegistrato(
+                            rs.getInt("id_utente"),
+                            rs.getString("username"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            rs.getString("photo"),
+                            rs.getString("bio"),
+                            rs.getBoolean("watchlist_visibility")
+                    );
+                }
+            }
+        }
+
+        return utente;
     }
 
     /**
