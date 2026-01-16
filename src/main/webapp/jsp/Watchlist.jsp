@@ -179,7 +179,6 @@
                 TmdbMovie m = movies.get(i);
                 String statusClass = it.isStatus() ? "visto" : "da-vedere";
 
-                // MODIFICA: Recupero anno
                 String year = (m.release_date != null && m.release_date.length() >= 4)
                         ? m.release_date.substring(0, 4) : "N/D";
     %>
