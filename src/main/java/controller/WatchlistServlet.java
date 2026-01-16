@@ -41,16 +41,16 @@ public class WatchlistServlet extends HttpServlet {
                 String titolo = request.getParameter("titolo");
                 Film filmSalvato = filmDao.findOrCreate(idTmdb, titolo);
                 watchlistDao.add(utente.getIdUtente(), filmSalvato.getIdFilm());
-            } catch (Exception e) { e.printStackTrace(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             response.sendRedirect("WatchlistServlet");
             return;
-        }
-        else if ("toggle".equals(action)) {
+        } else if ("toggle".equals(action)) {
             int idItem = Integer.parseInt(request.getParameter("idItem"));
             boolean status = Boolean.parseBoolean(request.getParameter("status"));
             watchlistDao.toggleStatus(idItem, status);
-        }
-        else if ("remove".equals(action)) {
+        } else if ("remove".equals(action)) {
             int idItem = Integer.parseInt(request.getParameter("idItem"));
             watchlistDao.remove(idItem);
         }
@@ -63,10 +63,10 @@ public class WatchlistServlet extends HttpServlet {
             int tmdbId = recuperaIdTmdbDaIdInterno(item.getIdFilm());
             TmdbMovie m = tmdbService.getMovieDetails(tmdbId);
 
-            if(m != null) {
+            if (m != null) {
                 moviesApi.add(m);
             } else {
-                // AGGIUNTA PLACEHOLDER: Fondamentale per evitare IndexOutOfBoundsException nella JSP
+
                 TmdbMovie placeholder = new TmdbMovie();
                 placeholder.title = "Titolo non disponibile";
                 placeholder.poster_path = ""; // O un'immagine di default
@@ -85,8 +85,10 @@ public class WatchlistServlet extends HttpServlet {
             java.sql.PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, idFilmInterno);
             java.sql.ResultSet rs = ps.executeQuery();
-            if(rs.next()) return rs.getInt("Id_tmdb");
-        } catch (Exception e) { e.printStackTrace(); }
+            if (rs.next()) return rs.getInt("Id_tmdb");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return 0;
     }
 }
