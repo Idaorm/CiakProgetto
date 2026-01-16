@@ -84,4 +84,27 @@ public class TmdbService {
         }
         return new ArrayList<>();
     }
+
+    public TmdbMovie getMovieDetails(int idTmdb) {
+        try {
+            String url = "https://api.themoviedb.org/3/movie/" + idTmdb + "?api_key=" + API_KEY + "&language=it-IT";
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200) {
+                return new com.google.gson.Gson().fromJson(response.body(), TmdbMovie.class);
+            } else {
+                System.out.println("Errore API Dettagli: " + response.statusCode());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

@@ -238,7 +238,7 @@
                 <span class="rating-badge">★ <%= f.vote_average %></span>
             </div>
 
-            <a href="#" class="btn-add">+ Aggiungi</a>
+            <a href="WatchlistServlet?action=add&idTmdb=<%= f.id %>&titolo=<%= java.net.URLEncoder.encode(f.title, "UTF-8") %>" class="btn-add">+ Aggiungi</a>
         </div>
     </div>
     <%

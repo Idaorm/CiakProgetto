@@ -251,7 +251,7 @@
             </div>
 
             <div class="action-buttons">
-                <a href="#" class="btn-gradient">
+                <a href="WatchlistServlet?action=add&idTmdb=<%= f.id %>&titolo=<%= java.net.URLEncoder.encode(f.title, "UTF-8") %>" class="btn-gradient">
                     + Aggiungi alla lista
                 </a>
                 <a href="#" class="btn-review">
