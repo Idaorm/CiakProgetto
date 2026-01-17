@@ -26,10 +26,10 @@ public class WatchlistServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utenteLoggato");
+        UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
 
         if (utente == null) {
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("/jsp/Login.jsp");
             return;
         }
 
@@ -44,7 +44,7 @@ public class WatchlistServlet extends HttpServlet {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            response.sendRedirect("WatchlistServlet");
+            response.sendRedirect("/jsp/WatchlistServlet");
             return;
         } else if ("toggle".equals(action)) {
             int idItem = Integer.parseInt(request.getParameter("idItem"));
@@ -76,7 +76,7 @@ public class WatchlistServlet extends HttpServlet {
 
         request.setAttribute("items", items);
         request.setAttribute("moviesApi", moviesApi);
-        request.getRequestDispatcher("Watchlist.jsp").forward(request, response);
+        request.getRequestDispatcher("/jsp/Watchlist.jsp").forward(request, response);
     }
 
     private int recuperaIdTmdbDaIdInterno(int idFilmInterno) {
