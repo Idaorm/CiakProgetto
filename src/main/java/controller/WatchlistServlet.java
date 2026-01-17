@@ -44,15 +44,19 @@ public class WatchlistServlet extends HttpServlet {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            response.sendRedirect("/jsp/WatchlistServlet");
+            response.sendRedirect("WatchlistServlet");
             return;
         } else if ("toggle".equals(action)) {
             int idItem = Integer.parseInt(request.getParameter("idItem"));
             boolean status = Boolean.parseBoolean(request.getParameter("status"));
             watchlistDao.toggleStatus(idItem, status);
+            response.sendRedirect("WatchlistServlet");
+            return;
         } else if ("remove".equals(action)) {
             int idItem = Integer.parseInt(request.getParameter("idItem"));
             watchlistDao.remove(idItem);
+            response.sendRedirect("WatchlistServlet");
+            return;
         }
 
         // CARICAMENTO DATI
@@ -69,7 +73,8 @@ public class WatchlistServlet extends HttpServlet {
 
                 TmdbMovie placeholder = new TmdbMovie();
                 placeholder.title = "Titolo non disponibile";
-                placeholder.poster_path = ""; // O un'immagine di default
+                placeholder.poster_path = "";
+                placeholder.genre_ids = new ArrayList<>();
                 moviesApi.add(placeholder);
             }
         }
