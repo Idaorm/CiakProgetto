@@ -32,7 +32,7 @@ public class LoginServlet extends HttpServlet {
 
         if (usernameOrEmail == null || password == null) {
             request.setAttribute("error", "Parametri mancanti");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/Login.jsp").forward(request, response);
             return;
         }
 
