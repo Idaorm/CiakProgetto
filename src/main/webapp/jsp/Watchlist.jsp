@@ -8,9 +8,13 @@
     <title>Ciak! - La mia Watchlist</title>
     <style>
         :root {
-            --bg-color: #0b0e11; --card-bg: #151a23; --text-color: #ffffff;
-            --text-muted: #8b92a8; --accent-gradient: linear-gradient(90deg, #f093fb, #f5576c);
-            --border-color: #2a3241; --accent-pink: #f5576c;
+            --bg-color: #0b0e11;
+            --card-bg: #151a23;
+            --text-color: #ffffff;
+            --text-muted: #8b92a8;
+            --accent-gradient: linear-gradient(90deg, #f093fb, #f5576c);
+            --border-color: #2a3241;
+            --accent-pink: #f5576c;
         }
         body {
             background-color: var(--bg-color);
