@@ -1,302 +1,227 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <link rel="icon" type="image/png" href="images/ciak (1).svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Ciack!</title>
+    <title>Login | Ciak!</title>
+
     <style>
+        *, *::before, *::after { box-sizing: border-box; }
         body {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0a0e14;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #0b0e11;
             color: #e4e6eb;
-            min-height: 100vh;
+            margin: 0;
+            padding: 20px 40px;
         }
 
-        * {
-            box-sizing: border-box;
-        }
-
-        /* Login Page Styles */
-        .login-page {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #0a0e14 0%, #151b26 100%);
-            padding: 24px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-page::before {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(240, 147, 251, 0.1) 0%, transparent 70%);
-            top: -200px;
-            right: -200px;
-            animation: float 8s ease-in-out infinite;
-        }
-
-        .login-page::after {
-            content: '';
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(245, 87, 108, 0.1) 0%, transparent 70%);
-            bottom: -150px;
-            left: -150px;
-            animation: float 6s ease-in-out infinite reverse;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            50% {
-                transform: translate(30px, 30px) scale(1.1);
-            }
+        .title-group h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .login-container {
-            width: 100%;
-            max-width: 450px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .login-card {
-            background: rgba(21, 27, 38, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 32px;
-            padding: 48px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 40px;
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: #151a23;
+            border: 1px solid #2a3241;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .logo {
-            margin-bottom: 16px;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        .login-title {
-            font-size: 36px;
-            font-weight: 900;
-            margin: 0 0 8px 0;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .login-subtitle {
-            font-size: 16px;
-            color: #8b92a8;
-            margin: 0;
-            font-weight: 500;
-        }
-
-        .login-form {
             display: flex;
-            flex-direction: column;
-            gap: 24px;
-            margin-bottom: 32px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .logo img { max-width: 100%; height: auto; }
+
+        .error-box {
+            background-color: rgba(245, 87, 108, 0.15);
+            border: 1px solid #f5576c;
+            color: #f5576c;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-weight: 600;
         }
 
+        .error-box ul { margin: 0; padding-left: 20px; }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        .form-group { margin-bottom: 20px; }
         .form-group label {
-            font-size: 14px;
+            display: block;
+            margin-bottom: 8px;
             font-weight: 600;
             color: #8b92a8;
         }
 
-        .form-group input {
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid #1f2937;
-            background: #151b26;
-            color: #e4e6eb;
-            font-size: 15px;
-            font-family: inherit;
-            transition: all 0.2s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #f093fb;
-            box-shadow: 0 0 0 3px rgba(240, 147, 251, 0.1);
-        }
-
-        .btn-login {
+        .form-input {
             width: 100%;
-            padding: 16px;
-            border-radius: 16px;
-            border: none;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background-color: #0b0e11;
+            border: 1px solid #2a3241;
+            border-radius: 50px;
+            padding: 12px 20px;
             color: white;
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input::placeholder {
+            color: #5a6b8c;
+            font-style: italic;
+        }
+
+        .form-input:focus {
+            border-color: #f093fb;
+            box-shadow: 0 0 20px rgba(240, 147, 251, 0.2);
+            transform: scale(1.02);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
             cursor: pointer;
+            font-size: 1.1rem;
+            color: #8b92a8;
+            user-select: none;
+            transition: color 0.3s ease;
+        }
+        .toggle-password:hover { color: #f093fb; }
+
+        .btn-submit {
+            width: 100%;
+            background-color: transparent;
+            border: 1px solid #f093fb;
+            color: #f093fb;
+            padding: 14px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
             transition: all 0.3s;
-            font-family: inherit;
-            box-shadow: 0 8px 24px rgba(240, 147, 251, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(240, 147, 251, 0.4);
+        .btn-submit:hover {
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 0 15px rgba(240, 147, 251, 0.4);
         }
 
-        .btn-login:active {
-            transform: translateY(0);
-        }
-
-        .login-footer {
+        .register-link {
             text-align: center;
-            padding-top: 24px;
-            border-top: 1px solid #1f2937;
-        }
-
-        .login-footer p {
-            margin: 0;
-            font-size: 15px;
+            margin-top: 25px;
             color: #8b92a8;
         }
 
-        .signup-link {
+        .register-link a {
             color: #f093fb;
             text-decoration: none;
-            font-weight: 700;
-            transition: all 0.2s;
-        }
-
-        .signup-link:hover {
-            color: #f5576c;
-        }
-
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #ef4444;
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 20px;
-            display: none;
         }
 
-        .error-message.show {
-            display: block;
-        }
+        .register-link a:hover { text-decoration: underline; }
 
-        @media (max-width: 640px) {
-            .login-card {
-                padding: 32px 24px;
-            }
-
-            .login-title {
-                font-size: 28px;
-            }
-
-            .logo {
-                font-size: 48px;
-            }
-        }
+        @media (max-width: 768px) { body { padding: 20px; } }
     </style>
 </head>
 <body>
-<div class="login-page">
-    <div class="login-container">
-        <div class="login-card">
 
-            <div class="login-header">
-                <div class="logo">
-                    <img src="${pageContext.request.contextPath}/images/ciak (1).svg" alt="Logo Ciak!" width="300" height="300">
-                </div>
-                <p class="login-subtitle">Accedi al tuo account</p>
-            </div>
+<div class="login-container">
 
+    <div class="logo">
+        <img src="${pageContext.request.contextPath}/images/ciak (1).svg" alt="Logo Ciak!" width="300" height="300">
+    </div>
 
-            <!-- Error message (se presente) -->
-            <%
-                String error = request.getParameter("error");
-                if (error != null && !error.isEmpty()) {
-            %>
-            <div class="error-message show">
-                <%
-                    if ("invalid".equals(error)) {
-                        out.print("⚠️ Credenziali non valide. Riprova.");
-                    } else if ("required".equals(error)) {
-                        out.print("⚠️ Compila tutti i campi.");
-                    } else {
-                        out.print("⚠️ Si è verificato un errore. Riprova.");
-                    }
-                %>
-            </div>
-            <% } %>
+    <h2>Accedi al tuo account</h2>
 
-            <form class="login-form" method="post" action="LoginServlet">
-                <div class="form-group">
-                    <label for="login-email">Email</label>
-                    <input type="email" id="login-email" name="email" placeholder="tuaemail@esempio.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" name="password" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="btn-login">Accedi</button>
-            </form>
+    <%-- Errore --%>
+    <%
+        String errore = (String) request.getAttribute("errore");
+        if (errore != null) {
+    %>
+    <div class="error-box">
+        <%= errore %>
+    </div>
+    <%
+        }
+    %>
 
-            <div class="login-footer">
-                <p>Non hai un account? <a href="register.jsp" class="signup-link">Registrati</a></p>
-            </div>
+    <%-- Messaggio di successo dopo la registrazione --%>
+    <%
+        Boolean successo = (Boolean) request.getAttribute("successo");
+        if (successo != null && successo) {
+    %>
+    <div class="error-box" style="background-color: rgba(0, 200, 83, 0.15); border-color: #00c853; color: #00c853;">
+        Registrazione completata! Accedi per continuare.
+    </div>
+    <%
+        }
+    %>
 
+    <form action="<%=request.getContextPath()%>/LoginServlet" method="POST">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text"
+                   id="email"
+                   name="email"
+                   value="<%= request.getAttribute("email") != null ? request.getAttribute("email") : "" %>"
+                   class="form-input"
+                   placeholder="Inserisci E-mail"
+                   required>
         </div>
+
+        <div class="form-group password-group" style="position: relative;">
+            <label for="password">Password</label>
+            <input type="password"
+                   id="password"
+                   name="password"
+                   class="form-input"
+                   placeholder="••••••••"
+                   required>
+            <label style="display: block; margin-top: 5px; font-weight: normal; color: #8b92a8;">
+                <input type="checkbox" id="showPassword" onclick="togglePassword('password', this)"> Mostra password
+            </label>
+        </div>
+
+        <button type="submit" class="btn-submit">Accedi</button>
+    </form>
+
+    <div class="register-link">
+        Non hai un account? <a href="jsp/Registrazione.jsp">Registrati</a>
     </div>
 </div>
 
 <script>
-    // Client-side validation
-    document.querySelector('.login-form').addEventListener('submit', function(e) {
-        const email = document.getElementById('login-email').value.trim();
-        const password = document.getElementById('login-password').value;
-
-        if (!email || !password) {
-            e.preventDefault();
-            alert('Compila tutti i campi!');
-            return false;
-        }
-
-        if (!email.includes('@')) {
-            e.preventDefault();
-            alert('Inserisci un indirizzo email valido!');
-            return false;
-        }
-    });
+    function togglePassword(inputId, checkbox) {
+        const input = document.getElementById(inputId);
+        input.type = checkbox.checked ? "text" : "password";
+    }
 </script>
+
 </body>
 </html>

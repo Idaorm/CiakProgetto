@@ -6,11 +6,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import jakarta.servlet.http.HttpSession;
 import model.UtenteRegistrato;
 import model.DAO.UtenteRegistratoDAO;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Connection;
+
+import org.mindrot.jbcrypt.BCrypt;
+import util.DBConnection;
 
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
@@ -20,38 +25,43 @@ public class LoginServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        utenteDAO = new UtenteRegistratoDAO(); // inizializzazione DAO
+        utenteDAO = new UtenteRegistratoDAO();
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.getRequestDispatcher("/jsp/Login.jsp").forward(request, response);
+    }
 
-        String usernameOrEmail = request.getParameter("username");
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        if (usernameOrEmail == null || password == null) {
-            request.setAttribute("error", "Parametri mancanti");
-            request.getRequestDispatcher("/Login.jsp").forward(request, response);
+        if (email == null || email.isBlank() || password == null || password.isBlank()) {
+            request.setAttribute("errore", "Email e password sono obbligatorie.");
+            request.getRequestDispatcher("/jsp/Login.jsp").forward(request, response);
             return;
         }
 
-        try {
-            UtenteRegistrato utente = utenteDAO.login(usernameOrEmail, password);
-
-            if (utente != null) {
-                request.getSession().setAttribute("utente", utente);
-                response.sendRedirect(request.getContextPath() + "/AccountUtente.jsp");
+        try (Connection conn = DBConnection.getConnection()) {
+            UtenteRegistrato utente = utenteDAO.getUtenteByEmail(email);
+            if (utente != null && BCrypt.checkpw(password, utente.getPassword())) {
+                HttpSession session = request.getSession();
+                session.setAttribute("utenteLoggato", utente);
+                response.sendRedirect(request.getContextPath() + "/jsp/AccountUtente.jsp");
             } else {
-                request.setAttribute("error", "Username/email o password non corretti");
-                request.getRequestDispatcher("/Login.jsp").forward(request, response);
+                request.setAttribute("errore", "Email o password non valide.");
+                request.getRequestDispatcher("/jsp/Login.jsp").forward(request, response);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            request.setAttribute("error", "Errore del server. Riprova più tardi.");
-            request.getRequestDispatcher("/Login.jsp").forward(request, response);
+            request.setAttribute("errore", "Errore interno. Riprova più tardi.");
+            request.getRequestDispatcher("/jsp/Login.jsp").forward(request, response);
         }
+
     }
 }
 

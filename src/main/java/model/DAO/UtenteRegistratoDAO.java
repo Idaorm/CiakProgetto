@@ -1,6 +1,7 @@
 package model.DAO;
 
 import model.UtenteRegistrato;
+import util.DBConnection;
 
 import java.sql.*;
 
@@ -16,64 +17,56 @@ public class UtenteRegistratoDAO {
      * Costruttore DAO.
      */
     public UtenteRegistratoDAO() {
-        this.connection = connection;
+        try {
+            // Ottieni la connessione dal DBConnection
+            this.connection = DBConnection.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore nella connessione al DB", e);
+        }
     }
 
     /**
      * Inserisce un nuovo utente nel database.
      * @param u Utente da inserire
+     * @return true se l'operazione è avvenuta con successo
+     *         false altrimenti
      * @throws SQLException
      */
-    public void insertUtente(UtenteRegistrato u) throws SQLException {
+    public boolean insertUtente(UtenteRegistrato u) throws SQLException {
         String sql = """
-            INSERT INTO UtenteRegistrato (username, email, password, photo, bio, watchlistVisibility)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """;
+        INSERT INTO UtenteRegistrato (username, email, password, photo, bio, watchlistVisibility)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """;
 
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setString(1, u.getUsername());
-        ps.setString(2, u.getEmail());
-        ps.setString(3, u.getPassword());
-        ps.setString(4, u.getPhoto());
-        ps.setString(5, u.getBio());
-        ps.setBoolean(6, u.isWatchlistVisibility());
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, u.getUsername());
+            ps.setString(2, u.getEmail());
+            ps.setString(3, u.getPassword());
+            ps.setString(4, u.getPhoto() != null ? u.getPhoto() : "");
+            ps.setString(5, u.getBio() != null ? u.getBio() : "");
+            ps.setBoolean(6, u.isWatchlistVisibility());
 
-        ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        }
     }
 
     /**
-     * Verifica le credenziali di accesso di un utente.
-     * @param usernameOrEmail username oppure email inseriti dall'utente
-     * @param password password inserita dall'utente
-     * @return UtenteRegistrato se le credenziali sono corrette,
-     *         null altrimenti
+     * Verifica se esiste già un utente registrato con l'email specificata.
+     * @param email l'email da controllare
+     * @return true se l'email è già associata a un utente registrato,
+     *         false altrimenti
+     * @throws SQLException se si verifica un errore durante l'accesso al database
      */
-    public UtenteRegistrato login(String usernameOrEmail, String password) throws SQLException {
-        UtenteRegistrato utente = null;
-
-        String sql = "SELECT * FROM utente WHERE (username=? OR email=?) AND password=?";
-
+    public boolean emailGiaRegistrata(String email) throws SQLException {
+        String sql = "SELECT 1 FROM UtenteRegistrato WHERE email = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, usernameOrEmail);
-            ps.setString(2, usernameOrEmail);
-            ps.setString(3, password);
-
+            ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    utente = new UtenteRegistrato(
-                            rs.getInt("id_utente"),
-                            rs.getString("username"),
-                            rs.getString("email"),
-                            rs.getString("password"),
-                            rs.getString("photo"),
-                            rs.getString("bio"),
-                            rs.getBoolean("watchlist_visibility")
-                    );
-                }
+                return rs.next();
             }
         }
-
-        return utente;
     }
 
     /**
@@ -83,7 +76,7 @@ public class UtenteRegistratoDAO {
      * @throws SQLException
      */
     public UtenteRegistrato getUtenteById(int idUtente) throws SQLException {
-        String sql = "SELECT * FROM Utente WHERE Id_utente = ?";
+        String sql = "SELECT * FROM UtenteRegistrato WHERE Id_utente = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, idUtente);
 
@@ -102,7 +95,7 @@ public class UtenteRegistratoDAO {
      * @throws SQLException
      */
     public UtenteRegistrato getUtenteByEmail(String email) throws SQLException {
-        String sql = "SELECT * FROM Utente WHERE email = ?";
+        String sql = "SELECT * FROM UtenteRegistrato WHERE email = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, email);
 
@@ -121,7 +114,7 @@ public class UtenteRegistratoDAO {
      */
     public void updateUtente(UtenteRegistrato u) throws SQLException {
         String sql = """
-            UPDATE Utente
+            UPDATE UtenteRegistrato
             SET username = ?, email = ?, password = ?, photo = ?, bio = ?, watchlistVisibility = ?
             WHERE Id_utente = ?
         """;
@@ -145,7 +138,7 @@ public class UtenteRegistratoDAO {
      * @throws SQLException
      */
     public void deleteUtente(int idUtente) throws SQLException {
-        String sql = "DELETE FROM Utente WHERE Id_utente = ?";
+        String sql = "DELETE FROM UtenteRegistrato WHERE Id_utente = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, idUtente);
         ps.executeUpdate();
