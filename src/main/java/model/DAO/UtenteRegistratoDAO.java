@@ -108,6 +108,45 @@ public class UtenteRegistratoDAO {
     }
 
     /**
+     * Recupera il numero di film presenti nella watchlist di un utente.
+     * @param idUtente L'ID dell'utente di cui calcolare il numero di film nella watchlist
+     * @return Il numero di film presenti nella watchlist dell'utente
+     * @throws SQLException Se si verifica un errore durante l'accesso al database
+     */
+    public int getWatchlistCount(int idUtente) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM WatchListItem WHERE Id_utente = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idUtente);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Recupera il numero di recensioni scritte da un utente.
+     * @param idUtente L'ID dell'utente di cui calcolare il numero di recensioni
+     * @return Il numero di recensioni scritte dall'utente
+     * @throws SQLException Se si verifica un errore durante l'accesso al database
+     */
+    public int getRecensioniCount(int idUtente) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Recensione WHERE Id_utente = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idUtente);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        return 0;
+    }
+
+
+    /**
      * Aggiorna i dati di un utente già presente nel database.
      * @param u Utente con dati aggiornati
      * @throws SQLException
