@@ -63,4 +63,18 @@ public class WatchlistItemDAO {
         } catch (SQLException e) { e.printStackTrace(); }
         return list;
     }
+
+    public void markAsWatched(int idUtente, int idFilm) {
+        String sql = "INSERT INTO WatchlistItem (Id_utente, Id_film, status) VALUES (?, ?, true) " +
+                "ON DUPLICATE KEY UPDATE status = true";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idUtente);
+            ps.setInt(2, idFilm);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

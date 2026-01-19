@@ -50,7 +50,7 @@ public class LoginServlet extends HttpServlet {
             if (utente != null && BCrypt.checkpw(password, utente.getPassword())) {
                 HttpSession session = request.getSession();
                 session.setAttribute("utenteLoggato", utente);
-                response.sendRedirect(request.getContextPath() + "/jsp/AccountUtente.jsp");
+                response.sendRedirect(request.getContextPath() + "/CatalogoServlet");
             } else {
                 request.setAttribute("errore", "Email o password non valide.");
                 request.getRequestDispatcher("/jsp/Login.jsp").forward(request, response);
