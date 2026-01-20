@@ -60,4 +60,21 @@ public class FilmDAO {
         }
         return null;
     }
+
+    public int recuperaIdTmdbDaIdInterno(int idFilmInterno) {
+        String sql = "SELECT Id_tmdb FROM Film WHERE Id_film = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idFilmInterno);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("Id_tmdb");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0; // Indica che il film non è stato trovato
+    }
 }

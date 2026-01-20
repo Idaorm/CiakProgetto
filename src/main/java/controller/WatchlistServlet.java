@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.DAO.FilmDAO;
+import model.DAO.RecensioneDAO;
 import model.DAO.WatchlistItemDAO;
 import model.Film;
 import model.UtenteRegistrato;
@@ -17,6 +18,7 @@ import service.TmdbService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/WatchlistServlet")
 public class WatchlistServlet extends HttpServlet {
@@ -25,6 +27,7 @@ public class WatchlistServlet extends HttpServlet {
     private FilmDAO filmDao = new FilmDAO();
     private TmdbService tmdbService = new TmdbService();
 
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
@@ -32,7 +35,7 @@ public class WatchlistServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         HttpSession session = request.getSession();
-        UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utenteLoggato");
+        UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
 
         if (utente == null) {
             response.sendRedirect(request.getContextPath() + "/jsp/Login.jsp");
@@ -53,7 +56,7 @@ public class WatchlistServlet extends HttpServlet {
                         Film filmSalvato = filmDao.findOrCreate(idTmdb, titolo);
                         watchlistDao.add(utente.getIdUtente(), filmSalvato.getIdFilm());
                     }
-                    response.sendRedirect(request.getContextPath() + "/WatchlistServlet");
+                    response.sendRedirect(request.getContextPath() + "/CatalogoServlet");
                     return;
 
                 } else if ("toggle".equals(action)) {
@@ -67,7 +70,6 @@ public class WatchlistServlet extends HttpServlet {
                 } else if ("remove".equals(action)) {
                     int idItem = Integer.parseInt(request.getParameter("idItem"));
                     watchlistDao.remove(idItem);
-
                     response.sendRedirect(request.getContextPath() + "/WatchlistServlet");
                     return;
                 }
@@ -81,43 +83,36 @@ public class WatchlistServlet extends HttpServlet {
             List<TmdbMovie> moviesApi = new ArrayList<>();
 
             for (WatchlistItem item : items) {
-                int tmdbId = recuperaIdTmdbDaIdInterno(item.getIdFilm());
-                TmdbMovie m = tmdbService.getMovieDetails(tmdbId);
-
-                if (m != null) {
-                    moviesApi.add(m);
-                } else {
-                    TmdbMovie placeholder = new TmdbMovie();
-                    placeholder.title = "Dettagli non disponibili";
-                    placeholder.poster_path = "";
-                    placeholder.genre_ids = new ArrayList<>();
-                    moviesApi.add(placeholder);
+                int tmdbId = filmDao.recuperaIdTmdbDaIdInterno(item.getIdFilm());
+                if (tmdbId > 0) {
+                    TmdbMovie m = tmdbService.getMovieDetails(tmdbId);
+                    if (m != null) {
+                        moviesApi.add(m);
+                    } else {
+                        TmdbMovie placeholder = new TmdbMovie();
+                        placeholder.title = "Dettagli non disponibili";
+                        placeholder.poster_path = "";
+                        placeholder.genre_ids = new ArrayList<>();
+                        moviesApi.add(placeholder);
+                    }
                 }
             }
+            RecensioneDAO recensioneDao = new RecensioneDAO();
+            Map<model.Recensione, String> recensioniUtente = recensioneDao.doRetrieveByUtente(utente.getIdUtente());
 
-            request.setAttribute("items", items);
+            request.setAttribute("utente", utente);
+            request.setAttribute("watchlist", items);
             request.setAttribute("moviesApi", moviesApi);
-            request.getRequestDispatcher("/jsp/Watchlist.jsp").forward(request, response);
+            request.setAttribute("recensioni", recensioniUtente);
 
+
+            request.setAttribute("watchlistCount", items.size());
+            request.setAttribute("recensioniCount", recensioniUtente.size());
+
+            //  Forward finale
+            request.getRequestDispatcher("/jsp/AccountUtente.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private int recuperaIdTmdbDaIdInterno(int idFilmInterno) {
-        String sql = "SELECT Id_tmdb FROM Film WHERE Id_film = ?";
-        try (java.sql.Connection conn = util.DBConnection.getConnection();
-             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, idFilmInterno);
-            try (java.sql.ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("Id_tmdb");
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
     }
 }
