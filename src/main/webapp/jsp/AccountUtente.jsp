@@ -516,15 +516,23 @@
         <div class="grid-container">
           <%
             if (items != null && movies != null) {
-              for (int i = 0; i < items.size() && i < movies.size(); i++) {
+              for (int i = 0; i < items.size(); i++) {
                 model.WatchlistItem it = items.get(i);
-                service.TmdbMovie m = movies.get(i);
-                String statusClass = it.isStatus() ? "visto" : "da-vedere";
-                String year = (m.release_date != null && m.release_date.length() >= 4) ? m.release_date.substring(0, 4) : "N/D";
-                String genreName = (m.genre_ids != null && !m.genre_ids.isEmpty()) ? genreMap.getOrDefault(m.genre_ids.get(0), "Cinema") : "Cinema";
+                service.TmdbMovie m = (i < movies.size()) ? movies.get(i) : null;
+                if (m!=null) {
+                  String statusClass = it.isStatus() ? "visto" : "da-vedere";
+                  String year = (m.release_date != null && m.release_date.length() >= 4) ? m.release_date.substring(0, 4) : "N/D";
+                  String genreName = (m.genre_ids != null && !m.genre_ids.isEmpty()) ? genreMap.getOrDefault(m.genre_ids.get(0), "Cinema") : "Cinema";
+                  String posterUrl;
+                  if (m.poster_path != null && !m.poster_path.isEmpty()) {
+                    posterUrl = "https://image.tmdb.org/t/p/w500" + m.poster_path;
+                  } else {
+                    // Immagine placeholder esterna (non serve che tu l'abbia nel progetto)
+                    posterUrl = "https://via.placeholder.com/500x750?text=No+Poster+Available";
+                  }
           %>
           <div class="movie-card <%= statusClass %>">
-            <img src="https://image.tmdb.org/t/p/w500<%= m.poster_path %>" alt="<%= m.title %>" class="movie-card-img">
+            <img src="<%= posterUrl %>" alt="<%= m.title %>" class="movie-card-img">
             <div class="card-body-wl">
               <div style="font-weight: bold; margin-bottom: 5px;"><%= m.title %></div>
               <div class="card-meta-wl">
@@ -545,12 +553,11 @@
               </div>
             </div>
           </div>
-          <% } } %>
+          <% } } } %>
         </div>
       </c:otherwise>
     </c:choose>
   </div>
-
 
   <!-- Contenuto Recensioni -->
   <div id="recensioni-content" class="tab-content">
