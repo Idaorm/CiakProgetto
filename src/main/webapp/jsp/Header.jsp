@@ -93,10 +93,9 @@
 </style>
 
 <header class="main-header">
-
     <div class="header-left">
         <div class="logo-wrapper">
-            <img src="${pageContext.request.contextPath}/images/ciak (1).svg" alt="Logo" class="logo-img">
+            <img src="${pageContext.request.contextPath}/images/ciak.svg" alt="Logo" class="logo-img">
             <span class="header-logo-text">CIAK!</span>
         </div>
     </div>

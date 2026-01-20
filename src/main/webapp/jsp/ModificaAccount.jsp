@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<jsp:include page="/jsp/Header.jsp" />
+
 
 <!DOCTYPE html>
 <html lang="it">
@@ -231,6 +231,7 @@
 </head>
 
 <body>
+<jsp:include page="/jsp/Header.jsp" />
 <div class="container">
   <div class="edit-card">
     <h1>Modifica account</h1>

@@ -1,11 +1,10 @@
 <%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<jsp:include page="/jsp/Header.jsp" />
 
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/images/ciak (1).svg">
+  <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/images/ciak.svg">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="images/ciak (1).svg">
@@ -179,11 +178,11 @@
   </style>
 </head>
 <body>
-
+<jsp:include page="/jsp/Header.jsp" />
 <div class="register-container">
 
   <div class="logo">
-    <img src="${pageContext.request.contextPath}/images/ciak (1).svg" alt="Logo Ciak!" width="300" height="300">
+    <img src="${pageContext.request.contextPath}/images/ciak.svg" alt="Logo Ciak!" width="300" height="300">
   </div>
 
   <h2>Crea il tuo account</h2>

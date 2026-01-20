@@ -1,11 +1,11 @@
 <%@ page import="java.util.List" %>
 <%@ page import="service.TmdbMovie" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<jsp:include page="/jsp/Header.jsp" />
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/images/ciak (1).svg">
+    <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/images/ciak.svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catalogo</title>
@@ -193,7 +193,7 @@
     </style>
 </head>
 <body>
-
+<jsp:include page="/jsp/Header.jsp" />
 <div class="header-row">
     <div class="title-group">
         <h1>I titoli del momento</h1>

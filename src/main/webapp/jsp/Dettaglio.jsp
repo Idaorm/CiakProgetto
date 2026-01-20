@@ -5,7 +5,6 @@
 <%@ page import="java.net.URLEncoder" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<jsp:include page="/jsp/Header.jsp" />
 
 <%
 
@@ -27,7 +26,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/images/ciak (1).svg">
+    <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/images/ciak.svg">
     <meta charset="UTF-8">
     <title>Film <%= (f != null) ? f.title : "Dettaglio" %></title>
     <style>
@@ -267,6 +266,7 @@
     </style>
 </head>
 <body>
+<jsp:include page="/jsp/Header.jsp" />
 
 <% if (f != null) { %>
 
