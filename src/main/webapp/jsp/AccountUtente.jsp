@@ -257,10 +257,20 @@
       position: relative;
     }
 
-    .movie-card:hover { transform: translateY(-5px); }
-    .movie-card-img { width: 100%; height: 320px; object-fit: cover; }
+    .movie-card:hover {
+      transform: translateY(-5px);
+      border-color: #f5576c; /* Colore dell'accento */
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    }
+    .movie-card-img {
+      width: 100%; height: 320px;
+      object-fit: cover; }
 
-    .card-body-wl { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+    .card-body-wl {
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column; }
 
     .card-meta-wl {
       display: flex;
@@ -303,7 +313,27 @@
       border-radius: 10px;
       text-decoration: none;
     }
+    .btn-remove-wl:hover {
+      background: rgba(245, 87, 108, 0.1);
+      transform: scale(1.05);
+    }
 
+    .movie-title-wl {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #ffffff;
+      font-size: 1.1rem;
+
+      /* Taglio automatico alla seconda riga */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+
+      /* Altezza minima fissa per far sì che tutte le card
+         abbiano i bottoni allineati alla stessa altezza */
+      min-height: 2.8em;
+    }
     .filter-bar-wl { margin-bottom: 30px; }
     .filter-btn-wl {
       background: #1a202c;
@@ -338,21 +368,19 @@
         margin-left: 0;
       }
 
-      /* Le statistiche (Film salvati, Visti, ecc.) vanno in colonna o si rimpiccioliscono */
       .stats-container {
-        flex-direction: column; /* Una sotto l'altra */
+        flex-direction: column;
         gap: 10px;
       }
 
       .stat-card {
-        padding: 15px; /* Meno spazio interno */
+        padding: 15px;
       }
 
       .stat-card h2 {
-        font-size: 1.8rem; /* Numeri un po' più piccoli */
+        font-size: 1.8rem;
       }
 
-      /* La barra dei filtri deve poter scorrere se i tasti sono troppi */
       .filter-bar-wl {
         display: flex;
         overflow-x: auto;
@@ -366,14 +394,13 @@
         font-size: 14px;
       }
 
-      /* La griglia si adatta: minmax riduce la larghezza minima a 150px per schermi piccoli */
       .grid-container {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 15px;
       }
 
       .movie-card img {
-        height: 230px; /* Foto più bassa sui cellulari */
+        height: 230px;
       }
 
       .card-body-wl {
@@ -392,7 +419,10 @@
 
   // Calcolo statistiche
   int totali = (items != null) ? items.size() : 0;
-  long visti = (items != null) ? items.stream().filter(WatchlistItem::isStatus).count() : 0;
+  long visti = 0;
+  if (items != null) {
+    visti = items.stream().filter(WatchlistItem::isStatus).count();
+  }
   long daVedere = totali - visti;
 
   // Mappa generi
@@ -518,15 +548,23 @@
             if (items != null && movies != null) {
               for (int i = 0; i < items.size() && i < movies.size(); i++) {
                 model.WatchlistItem it = items.get(i);
-                service.TmdbMovie m = movies.get(i);
-                String statusClass = it.isStatus() ? "visto" : "da-vedere";
-                String year = (m.release_date != null && m.release_date.length() >= 4) ? m.release_date.substring(0, 4) : "N/D";
-                String genreName = (m.genre_ids != null && !m.genre_ids.isEmpty()) ? genreMap.getOrDefault(m.genre_ids.get(0), "Cinema") : "Cinema";
+                service.TmdbMovie m = (i < movies.size()) ? movies.get(i) : null;
+                if (m!=null && m.title != null) {
+                  String statusClass = it.isStatus() ? "visto" : "da-vedere";
+                  String year = (m.release_date != null && m.release_date.length() >= 4) ? m.release_date.substring(0, 4) : "N/D";
+                  String genreName = (m.genre_ids != null && !m.genre_ids.isEmpty()) ? genreMap.getOrDefault(m.genre_ids.get(0), "Cinema") : "Cinema";
+                  String posterUrl;
+                  if (m.poster_path != null && !m.poster_path.isEmpty()) {
+                    posterUrl = "https://image.tmdb.org/t/p/w500" + m.poster_path;
+                  } else {
+                    // Immagine placeholder esterna
+                    posterUrl = "https://via.placeholder.com/500x750?text=No+Poster+Available";
+                  }
           %>
           <div class="movie-card <%= statusClass %>">
-            <img src="https://image.tmdb.org/t/p/w500<%= m.poster_path %>" alt="<%= m.title %>" class="movie-card-img">
+            <img src="<%= posterUrl %>" alt="<%= m.title %>" class="movie-card-img">
             <div class="card-body-wl">
-              <div style="font-weight: bold; margin-bottom: 5px;"><%= m.title %></div>
+              <div class="movie-title-wl" style="font-weight: bold; margin-bottom: 5px;"><%= m.title %></div>
               <div class="card-meta-wl">
                 <span><%= year %></span>
                 <span class="badge-genre-wl"><%= genreName %></span>
@@ -545,12 +583,15 @@
               </div>
             </div>
           </div>
-          <% } } %>
+          <%
+                }
+              }
+            }
+          %>
         </div>
       </c:otherwise>
     </c:choose>
   </div>
-
 
   <!-- Contenuto Recensioni -->
   <div id="recensioni-content" class="tab-content">

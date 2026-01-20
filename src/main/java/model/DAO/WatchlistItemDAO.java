@@ -55,6 +55,7 @@ public class WatchlistItemDAO {
             while (rs.next()) {
                 WatchlistItem item = new WatchlistItem();
                 item.setIdItem(rs.getInt("Id_item"));
+                rs.getInt("Id_utente");
                 item.setStatus(rs.getBoolean("status"));
                 item.setIdFilm(rs.getInt("Id_film"));
                 item.setIdUtente(idUtente);

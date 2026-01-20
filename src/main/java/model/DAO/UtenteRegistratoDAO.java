@@ -4,6 +4,8 @@ import model.UtenteRegistrato;
 import util.DBConnection;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DAO per l'entità Utente.
@@ -168,6 +170,39 @@ public class UtenteRegistratoDAO {
         ps.setInt(7, u.getIdUtente());
 
         ps.executeUpdate();
+    }
+
+    /**
+     * Cerca gli utenti registrati il cui username contiene la stringa di ricerca fornita.
+     * @param query stringa di ricerca inserita dall'utente
+     * @return una lista di UtenteRegistrato che corrispondono ai criteri di ricerca;
+     *         la lista è vuota se non viene trovato alcun utente.
+     */
+    public List<UtenteRegistrato> cercaUtenti(String query) {
+
+        List<UtenteRegistrato> risultati = new ArrayList<>();
+
+        String sql = "SELECT * FROM utenti WHERE username LIKE ? OR nome LIKE ?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, "%" + query + "%");
+            ps.setString(2, "%" + query + "%");
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                UtenteRegistrato u = new UtenteRegistrato();
+                u.setIdUtente(rs.getInt("id"));
+                u.setUsername(rs.getString("username"));
+                risultati.add(u);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return risultati;
     }
 
     /**

@@ -56,7 +56,7 @@ public class WatchlistServlet extends HttpServlet {
                         Film filmSalvato = filmDao.findOrCreate(idTmdb, titolo);
                         watchlistDao.add(utente.getIdUtente(), filmSalvato.getIdFilm());
                     }
-                    response.sendRedirect(request.getContextPath() + "/CatalogoServlet");
+                    response.sendRedirect(request.getContextPath() + "/WatchlistServlet");
                     return;
 
                 } else if ("toggle".equals(action)) {
@@ -81,21 +81,25 @@ public class WatchlistServlet extends HttpServlet {
         try {
             List<WatchlistItem> items = watchlistDao.findByUtente(utente.getIdUtente());
             List<TmdbMovie> moviesApi = new ArrayList<>();
-
+            if (items != null) {
             for (WatchlistItem item : items) {
                 int tmdbId = filmDao.recuperaIdTmdbDaIdInterno(item.getIdFilm());
+                TmdbMovie m = null;
                 if (tmdbId > 0) {
-                    TmdbMovie m = tmdbService.getMovieDetails(tmdbId);
-                    if (m != null) {
-                        moviesApi.add(m);
-                    } else {
-                        TmdbMovie placeholder = new TmdbMovie();
-                        placeholder.title = "Dettagli non disponibili";
-                        placeholder.poster_path = "";
-                        placeholder.genre_ids = new ArrayList<>();
-                        moviesApi.add(placeholder);
-                    }
+                    m = tmdbService.getMovieDetails(tmdbId);
                 }
+
+                if (m != null && m.title != null) {
+                    moviesApi.add(m);
+                } else {
+                    TmdbMovie placeholder = new TmdbMovie();
+                    placeholder.title = "Titolo non disponibile";
+                    placeholder.poster_path = null;
+                    placeholder.release_date = "";
+                    placeholder.genre_ids = new ArrayList<>();
+                    moviesApi.add(placeholder);
+                }
+            }
             }
             RecensioneDAO recensioneDao = new RecensioneDAO();
             Map<model.Recensione, String> recensioniUtente = recensioneDao.doRetrieveByUtente(utente.getIdUtente());
@@ -113,6 +117,7 @@ public class WatchlistServlet extends HttpServlet {
             request.getRequestDispatcher("/jsp/AccountUtente.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/jsp/AccountUtente.jsp");
         }
     }
 }
