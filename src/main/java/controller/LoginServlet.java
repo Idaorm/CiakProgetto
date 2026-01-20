@@ -49,8 +49,8 @@ public class LoginServlet extends HttpServlet {
             UtenteRegistrato utente = utenteDAO.getUtenteByEmail(email);
             if (utente != null && BCrypt.checkpw(password, utente.getPassword())) {
                 HttpSession session = request.getSession();
-                session.setAttribute("utente", utente);
-                response.sendRedirect(request.getContextPath() + "/AccountUtenteServlet");
+                session.setAttribute("utenteLoggato", utente);
+                response.sendRedirect(request.getContextPath() + "/CatalogoServlet");
             } else {
                 request.setAttribute("errore", "Email o password non valide.");
                 request.getRequestDispatcher("/jsp/Login.jsp").forward(request, response);

@@ -1,6 +1,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="service.TmdbMovie" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<jsp:include page="/jsp/Header.jsp" />
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -18,7 +19,7 @@
             background-color: #0b0e11;
             color: #e4e6eb;
             margin: 0;
-            padding: 20px 40px;
+            padding: 20px ;
         }
 
         .header-row {

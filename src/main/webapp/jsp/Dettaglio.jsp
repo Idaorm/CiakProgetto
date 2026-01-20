@@ -1,32 +1,42 @@
 <%@ page import="service.TmdbMovie" %>
+<%@ page import="java.util.LinkedHashMap" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="model.Recensione" %>
+<%@ page import="java.net.URLEncoder" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<jsp:include page="/jsp/Header.jsp" />
+
 <%
-    // Recupero l'oggetto film passato dalla Servlet
+
     TmdbMovie f = (TmdbMovie) request.getAttribute("filmDettaglio");
 
-    boolean hasPoster = (f.poster_path != null && !f.poster_path.isEmpty());
+    LinkedHashMap<Recensione, String> recensioniMap = (LinkedHashMap<Recensione, String>) request.getAttribute("recensioniMap");
+
+    boolean hasPoster = (f != null && f.poster_path != null && !f.poster_path.isEmpty());
     String posterUrl = hasPoster
             ? "https://image.tmdb.org/t/p/w500" + f.poster_path
             : "https://via.placeholder.com/300x450?text=No+Poster";
 
-    String year = (f.release_date != null && f.release_date.length() >= 4)
+    String year = (f != null && f.release_date != null && f.release_date.length() >= 4)
             ? f.release_date.substring(0, 4)
             : "N/A";
+    String encodedTitle = (f != null) ? URLEncoder.encode(f.title, "UTF-8") : "";
 %>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <link rel="icon" type="image/png" href="images/ciak (1).svg">
     <meta charset="UTF-8">
-    <title>Film <%= f.title %></title>
+    <title>Film <%= (f != null) ? f.title : "Dettaglio" %></title>
     <style>
-
         body {
             font-family: 'Inter', sans-serif;
             background-color: #0b0e11;
             color: #ffffff;
             margin: 0;
-            padding: 40px;
+            padding: 20px;
         }
 
         .container {
@@ -85,7 +95,7 @@
             font-size: 0.85rem;
         }
 
-        .stars {
+        .stars-rating {
             color: #f5c518;
             font-size: 1.2rem;
             margin-bottom: 30px;
@@ -148,6 +158,7 @@
 
         .btn-review:hover {
             background-color: #f093fb;
+            color: white;
             box-shadow: 0 0 15px rgba(240, 147, 251, 0.4);
         }
 
@@ -201,6 +212,7 @@
             font-weight: 600;
         }
 
+        /* --- STILE RECENSIONI --- */
         .reviews-section {
             border-top: 1px solid #2a3241;
             padding-top: 40px;
@@ -211,6 +223,32 @@
             font-size: 2rem;
             margin-bottom: 20px;
             color: #fff;
+        }
+
+        .review-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .avatar-circle {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 20px;
+            text-transform: uppercase;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
         }
 
         .no-reviews-msg {
@@ -230,6 +268,8 @@
 </head>
 <body>
 
+<% if (f != null) { %>
+
 <div class="container">
 
     <div class="top-section">
@@ -246,18 +286,20 @@
                 <span class="tag">HD</span>
             </div>
 
-            <div class="stars">
+            <div class="stars-rating">
                 ★ <%= f.vote_average %> / 10
             </div>
 
             <div class="action-buttons">
-                <a href="WatchlistServlet?action=add&idTmdb=<%= f.id %>&titolo=<%= java.net.URLEncoder.encode(f.title, "UTF-8") %>" class="btn-gradient">
+                <a href="WatchlistServlet?action=add&idTmdb=<%= f.id %>&titolo=<%= encodedTitle %>" class="btn-gradient">
                     + Aggiungi alla lista
                 </a>
-                <a href="#" class="btn-review">
-                     Aggiungi recensione
+
+                <a href="${pageContext.request.contextPath}/jsp/Recensione.jsp?idTmdb=<%= f.id %>&titolo=<%= encodedTitle %>" class="btn-review">
+                    Aggiungi recensione
                 </a>
-                <a href="CatalogoServlet" class="btn-outline">
+
+                <a href="${pageContext.request.contextPath}/CatalogoServlet" class="btn-outline">
                     ← Indietro
                 </a>
             </div>
@@ -296,12 +338,56 @@
     </div>
 
     <div class="reviews-section">
-        <h2 class="reviews-title">Cosa dicono gli utenti</h2>
+        <h2 class="reviews-title">
+            Cosa dicono gli utenti
+            <% if (recensioniMap != null) { %> (<%= recensioniMap.size() %>) <% } %>
+        </h2>
 
-        <p class="no-reviews-msg">Nessuna recensione presente.</p>
+        <% if (recensioniMap != null && !recensioniMap.isEmpty()) { %>
+
+        <div style="display: grid; gap: 20px;">
+            <%
+                for (Map.Entry<Recensione, String> entry : recensioniMap.entrySet()) {
+                    Recensione r = entry.getKey();
+                    // String inizialeEmail = entry.getValue(); // Non ci serve più
+            %>
+
+            <div class="review-card">
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+
+                        <div style="color: #ffd700; font-size: 14px;">
+                            <% for(int i=0; i<r.getRating(); i++) { %>★<% } %>
+                            <% for(int i=r.getRating(); i<5; i++) { %>☆<% } %>
+                        </div>
+
+                        <span style="color: #666; font-size: 12px;">
+                            <%= r.getDate() %>
+                        </span>
+                    </div>
+
+                    <p style="color: #e4e6eb; line-height: 1.5; margin: 0; font-size: 15px;">
+                        "<%= r.getText() %>"
+                    </p>
+                </div>
+            </div>
+
+            <% } %>
+        </div>
+
+        <% } else { %>
+        <p class="no-reviews-msg">Nessuna recensione presente per questo film. Sii il primo a scriverne una!</p>
+        <% } %>
     </div>
 
 </div>
+
+<% } else { %>
+<div class="container">
+    <h1>Film non trovato</h1>
+    <a href="index.jsp" class="btn-outline">Torna alla Home</a>
+</div>
+<% } %>
 
 </body>
 </html>
