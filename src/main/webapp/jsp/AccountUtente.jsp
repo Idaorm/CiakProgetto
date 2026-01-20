@@ -419,7 +419,10 @@
 
   // Calcolo statistiche
   int totali = (items != null) ? items.size() : 0;
-  long visti = (items != null) ? items.stream().filter(WatchlistItem::isStatus).count() : 0;
+  long visti = 0;
+  if (items != null) {
+    visti = items.stream().filter(WatchlistItem::isStatus).count();
+  }
   long daVedere = totali - visti;
 
   // Mappa generi
