@@ -294,6 +294,8 @@
   <!-- Contenuto Watchlist -->
   <div id="watchlist-content" class="tab-content active">
     <c:choose>
+
+      <%-- Lista vuota --%>
       <c:when test="${empty watchlist}">
         <div class="empty-state">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -303,13 +305,26 @@
           <h3>Nessun film nella lista</h3>
         </div>
       </c:when>
+
+      <%-- Lista privata non visibile a visitatori o altri utenti --%>
+      <c:when test="${not empty sessionScope.utente and sessionScope.utente.idUtente != utente.idUtente and not utente.watchlistVisibility}">
+        <div class="empty-state">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 4v16m8-8H4"></path>
+          </svg>
+          <h3>La watchlist è privata</h3>
+          <p>Solo il proprietario può vedere i film salvati.</p>
+        </div>
+      </c:when>
+
+      <%-- Lista visibile: utente loggato proprietario o lista pubblica --%>
       <c:otherwise>
-
-        <!-- CODICE WATCHLIST -->
-
+        <%-- CODICE WATCHLIST QUI --%>
       </c:otherwise>
     </c:choose>
   </div>
+
 
   <!-- Contenuto Recensioni -->
   <div id="recensioni-content" class="tab-content">
