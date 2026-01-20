@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="model.UtenteRegistrato" %>
 <%
-    UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utenteLoggato");
+    UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
     boolean isLogged = (utente != null);
 %>
 
@@ -26,7 +26,6 @@
         display: flex;
         align-items: center;
     }
-
 
     .logo-wrapper {
         display: flex;
@@ -71,7 +70,7 @@
     .btn-ghost {
         color: #e4e6eb;
         background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
     }
 
     .btn-ghost:hover {
@@ -104,11 +103,11 @@
 
     <div class="header-right">
         <% if (!isLogged) { %>
-        <a href="${pageContext.request.contextPath}/jsp/Login.jsp" class="btn-header btn-ghost">Accedi</a>
-        <a href="${pageContext.request.contextPath}/jsp/Registrazione.jsp" class="btn-header btn-primary">Registrati</a>
+        <a href="${pageContext.request.contextPath}/LoginServlet" class="btn-header btn-primary">Accedi</a>
+        <a href="${pageContext.request.contextPath}/RegistrazioneServlet" class="btn-header btn-ghost">Registrati</a>
         <% } else { %>
-        <a href="${pageContext.request.contextPath}/AccountUtente.jsp" class="btn-header btn-ghost">Profilo</a>
-        <a href="${pageContext.request.contextPath}/LogoutServlet" class="btn-header btn-primary">Esci</a>
+        <a href="${pageContext.request.contextPath}/AccountUtenteServlet" class="btn-header btn-primary">Account</a>
+        <a href="${pageContext.request.contextPath}/LogoutServlet" class="btn-header btn-ghost">Logout</a>
         <% } %>
     </div>
 </header>

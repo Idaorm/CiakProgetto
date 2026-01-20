@@ -1,21 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ page import="java.util.*, model.WatchlistItem, service.TmdbMovie, model.UtenteRegistrato" %>
+<jsp:include page="/jsp/Header.jsp" />
 
 <!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="images/ciak (1).svg">
   <title>Profilo - ${utente.username}</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -50,12 +45,21 @@
       width: 120px;
       height: 120px;
       border-radius: 50%;
+      border: 3px solid #1f2937;
       background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 60px;
-      border: 3px solid #1f2937;
+      overflow: hidden;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
     }
 
     .user-details h1 {
@@ -64,6 +68,18 @@
       background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+
+    .user-actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 20px;
+      gap: 40px;
+    }
+
+    .user-actions-row form {
+      margin-left: auto;
     }
 
     .user-stats {
@@ -163,137 +179,28 @@
       opacity: 0.4;
     }
 
-    .btn-modifica {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #f093fb;
-      border: none;
+    .btn-header {
+      padding: 10px 24px;
       border-radius: 8px;
-      color: #0a0e14;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .btn-modifica:hover {
-      background: #f5576c;
-      color: white;
-    }
-
-    /* --- AGGIUNTE PER WATCHLIST --- */
-    :root {
-      --accent-gradient: linear-gradient(90deg, #f093fb, #f5576c);
-      --card-bg: #151b26;
-      --border-color: #1f2937;
-      --accent-pink: #f5576c;
-      --text-muted: #8b92a8;
-    }
-    .actions {
-      display: flex;
-      gap: 10px;
-      margin-top: auto; /* Spinge i bottoni sempre in fondo alla card */
-    }
-
-    .stats-container {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 40px;
-    }
-
-    .stat-card {
-      background: var(--card-bg);
-      padding: 30px 20px;
-      border-radius: 16px;
-      flex: 1;
-      border: 1px solid var(--border-color);
-      text-align: center;
-    }
-
-    .stat-card h2 {
-      margin: 0;
-      font-size: 2.5rem;
-      background: var(--accent-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: 800;
-    }
-
-    .grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 25px;
-    }
-
-    .movie-card {
-      background: var(--card-bg);
-      border-radius: 20px;
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-      transition: transform 0.3s;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-
-    .movie-card:hover { transform: translateY(-5px); }
-    .movie-card-img { width: 100%; height: 320px; object-fit: cover; }
-
-    .card-body-wl { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-
-    .card-meta-wl {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .badge-genre-wl {
-      background: var(--accent-pink);
-      color: white;
-      padding: 2px 10px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: bold;
-    }
-
-    .btn-status-wl {
-      background: #0a0e14;
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      padding: 10px;
-      border-radius: 10px;
-      flex-grow: 1;
-      text-decoration: none;
-      text-align: center;
-      font-size: 0.85rem;
-    }
-
-    .btn-remove-wl {
-      border: 1px solid var(--accent-pink);
-      color: var(--accent-pink);
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10px;
-      text-decoration: none;
-    }
-
-    .filter-bar-wl { margin-bottom: 30px; }
-    .filter-btn-wl {
-      background: #1a202c;
-      color: var(--text-muted);
-      border: none;
-      padding: 10px 25px;
-      border-radius: 25px;
-      cursor: pointer;
-      margin-right: 10px;
+      font-size: 15px;
       font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
     }
-    .filter-btn-wl.active { background: var(--accent-gradient); color: white; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+    }
 
     /* Responsive */
     @media (max-width: 768px) {
@@ -306,75 +213,21 @@
         font-size: 28px;
       }
 
-      /* Le statistiche (Film salvati, Visti, ecc.) vanno in colonna o si rimpiccioliscono */
-      .stats-container {
-        flex-direction: column; /* Una sotto l'altra */
-        gap: 10px;
+      .user-actions-row {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
       }
 
-      .stat-card {
-        padding: 15px; /* Meno spazio interno */
+      .user-actions-row form {
+        margin-left: 0;
       }
-
-      .stat-card h2 {
-        font-size: 1.8rem; /* Numeri un po' più piccoli */
-      }
-
-      /* La barra dei filtri deve poter scorrere se i tasti sono troppi */
-      .filter-bar-wl {
-        display: flex;
-        overflow-x: auto;
-        padding-bottom: 10px;
-        white-space: nowrap;
-        gap: 10px;
-      }
-
-      .filter-btn-wl {
-        padding: 8px 15px;
-        font-size: 14px;
-      }
-
-      /* La griglia si adatta: minmax riduce la larghezza minima a 150px per schermi piccoli */
-      .grid-container {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-      }
-
-      .movie-card img {
-        height: 230px; /* Foto più bassa sui cellulari */
-      }
-
-      .card-body-wl {
-        padding: 12px;
-      }
-
     }
+
   </style>
 </head>
 
 <body>
-<%
-  // Recupero dati
-  List<WatchlistItem> items = (List<WatchlistItem>) request.getAttribute("watchlist");
-  List<TmdbMovie> movies = (List<TmdbMovie>) request.getAttribute("moviesApi");
-
-  // Calcolo statistiche
-  int totali = (items != null) ? items.size() : 0;
-  long visti = (items != null) ? items.stream().filter(WatchlistItem::isStatus).count() : 0;
-  long daVedere = totali - visti;
-
-  // Mappa generi
-  Map<Integer, String> genreMap = new HashMap<>();
-  genreMap.put(28, "Azione"); genreMap.put(12, "Avventura"); genreMap.put(16, "Animazione");
-  genreMap.put(35, "Commedia"); genreMap.put(80, "Crime"); genreMap.put(18, "Dramma");
-  genreMap.put(14, "Fantasy"); genreMap.put(27, "Horror"); genreMap.put(878, "Sci-Fi");
-  genreMap.put(53, "Thriller");
-
-  // Controllo se l'utente loggato è anche  il proprietario del profiilo
-  UtenteRegistrato loggato = (UtenteRegistrato) session.getAttribute("utente");
-  UtenteRegistrato profilo = (UtenteRegistrato) request.getAttribute("utente");
-  boolean isOwner = (loggato != null && profilo != null && loggato.getIdUtente() == profilo.getIdUtente());
-%>
 <div class="container">
   <!-- Header Profilo -->
   <section class="profile-header">
@@ -391,23 +244,28 @@
       </div>
       <div class="user-details">
         <h1>${utente.username}</h1>
-        <div class="user-stats">
-          <div class="stat">
-            <div class="stat-value">${watchlistCount}</div>
-            <div class="stat-label">Film</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">${recensioniCount}</div>
-            <div class="stat-label">Recensioni</div>
-          </div>
-        </div>
+        <div class="user-actions-row">
 
-        <!-- Bottone Modifica account se l'utente è loggato e proprietario del profilo -->
-        <c:if test="${not empty sessionScope.utente and sessionScope.utente.idUtente == utente.idUtente}">
-          <form action="${pageContext.request.contextPath}/ModificaAccountServlet" method="get">
-            <button type="submit" class="btn-modifica">Modifica account</button>
-          </form>
-        </c:if>
+          <div class="user-stats">
+            <div class="stat">
+              <div class="stat-value">${watchlistCount}</div>
+              <div class="stat-label">Film</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">${recensioniCount}</div>
+              <div class="stat-label">Recensioni</div>
+            </div>
+          </div>
+
+          <c:if test="${not empty sessionScope.utente and sessionScope.utente.idUtente == utente.idUtente}">
+            <form action="${pageContext.request.contextPath}/ModificaAccountServlet" method="get">
+              <button type="submit" class="btn-header btn-primary">
+                Modifica Account
+              </button>
+            </form>
+          </c:if>
+
+        </div>
 
       </div>
     </div>
@@ -436,7 +294,8 @@
   <!-- Contenuto Watchlist -->
   <div id="watchlist-content" class="tab-content active">
     <c:choose>
-      <%-- CASO 1: LISTA VUOTA --%>
+
+      <%-- Lista vuota --%>
       <c:when test="${empty watchlist}">
         <div class="empty-state">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -446,58 +305,26 @@
           <h3>Nessun film nella lista</h3>
         </div>
       </c:when>
-      <%-- CASO 2: CI SONO DEI FILM --%>
+
+      <%-- Lista privata non visibile a visitatori o altri utenti --%>
+      <c:when test="${not empty sessionScope.utente and sessionScope.utente.idUtente != utente.idUtente and not utente.watchlistVisibility}">
+        <div class="empty-state">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 4v16m8-8H4"></path>
+          </svg>
+          <h3>La watchlist è privata</h3>
+          <p>Solo il proprietario può vedere i film salvati.</p>
+        </div>
+      </c:when>
+
+      <%-- Lista visibile: utente loggato proprietario o lista pubblica --%>
       <c:otherwise>
-        <!-- CODICE WATCHLIST -->
-        <div class="stats-container">
-          <div class="stat-card"><h2><%= totali %></h2><p>Film salvati</p></div>
-          <div class="stat-card"><h2><%= visti %></h2><p>Film visti</p></div>
-          <div class="stat-card"><h2><%= daVedere %></h2><p>Da vedere</p></div>
-        </div>
-
-        <div class="filter-bar-wl">
-          <button class="filter-btn-wl active" onclick="applyFilter('all', this)">Tutti</button>
-          <button class="filter-btn-wl" onclick="applyFilter('da-vedere', this)">Da vedere</button>
-          <button class="filter-btn-wl" onclick="applyFilter('visto', this)">Visti</button>
-        </div>
-
-        <div class="grid-container">
-          <%
-            if (items != null && movies != null) {
-              for (int i = 0; i < items.size() && i < movies.size(); i++) {
-                model.WatchlistItem it = items.get(i);
-                service.TmdbMovie m = movies.get(i);
-                String statusClass = it.isStatus() ? "visto" : "da-vedere";
-                String year = (m.release_date != null && m.release_date.length() >= 4) ? m.release_date.substring(0, 4) : "N/D";
-                String genreName = (m.genre_ids != null && !m.genre_ids.isEmpty()) ? genreMap.getOrDefault(m.genre_ids.get(0), "Cinema") : "Cinema";
-          %>
-          <div class="movie-card <%= statusClass %>">
-            <img src="https://image.tmdb.org/t/p/w500<%= m.poster_path %>" alt="<%= m.title %>" class="movie-card-img">
-            <div class="card-body-wl">
-              <div style="font-weight: bold; margin-bottom: 5px;"><%= m.title %></div>
-              <div class="card-meta-wl">
-                <span><%= year %></span>
-                <span class="badge-genre-wl"><%= genreName %></span>
-              </div>
-              <div class="actions">
-                <% if(isOwner) { %>
-                <a href="WatchlistServlet?action=toggle&idItem=<%= it.getIdItem() %>&status=<%= it.isStatus() %>" class="btn-status-wl">
-                  <%= it.isStatus() ? "✓ Visto" : "Da vedere" %>
-                </a>
-                <a href="WatchlistServlet?action=remove&idItem=<%= it.getIdItem() %>" class="btn-remove-wl" onclick="return confirm('Rimuovere?')">✕</a>
-                <% } else { %>
-                <span class="btn-status-wl" style="cursor: default; flex-grow: 1;">
-                                    <%= it.isStatus() ? "Visto" : "Da vedere" %>
-                                </span>
-                <% } %>
-              </div>
-            </div>
-          </div>
-          <% } } %>
-        </div>
+        <%-- CODICE WATCHLIST QUI --%>
       </c:otherwise>
     </c:choose>
   </div>
+
 
   <!-- Contenuto Recensioni -->
   <div id="recensioni-content" class="tab-content">
@@ -530,14 +357,6 @@
     // Attiva il tab selezionato
     event.target.classList.add('active');
     document.getElementById(tabName + '-content').classList.add('active');
-  }
-
-  function applyFilter(filterType, btn) {
-    document.querySelectorAll('.filter-btn-wl').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.movie-card').forEach(card => {
-      card.style.display = (filterType === 'all' || card.classList.contains(filterType)) ? 'flex' : 'none';
-    });
   }
 </script>
 </body>

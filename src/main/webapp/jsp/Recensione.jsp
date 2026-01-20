@@ -2,7 +2,7 @@
 <%@ page import="model.UtenteRegistrato" %>
 <%
 
-    UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utenteLoggato");
+    UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
     if (utente == null) {
         response.sendRedirect(request.getContextPath() + "/jsp/Login.jsp");
         return;
