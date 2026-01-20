@@ -25,7 +25,7 @@ public class RecensioneServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         HttpSession session = request.getSession();
-        UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utenteLoggato");
+        UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
 
         if (utente == null) {
             response.sendRedirect("jsp/Login.jsp");

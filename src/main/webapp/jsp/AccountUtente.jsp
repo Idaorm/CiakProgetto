@@ -1,19 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<jsp:include page="/jsp/Header.jsp" />
 
 <!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="images/ciak (1).svg">
   <title>Profilo - ${utente.username}</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -48,12 +45,21 @@
       width: 120px;
       height: 120px;
       border-radius: 50%;
+      border: 3px solid #1f2937;
       background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 60px;
-      border: 3px solid #1f2937;
+      overflow: hidden;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
     }
 
     .user-details h1 {
@@ -62,6 +68,18 @@
       background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+
+    .user-actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 20px;
+      gap: 40px;
+    }
+
+    .user-actions-row form {
+      margin-left: auto;
     }
 
     .user-stats {
@@ -161,21 +179,27 @@
       opacity: 0.4;
     }
 
-    .btn-modifica {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #f093fb;
-      border: none;
+    .btn-header {
+      padding: 10px 24px;
       border-radius: 8px;
-      color: #0a0e14;
-      font-weight: bold;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: none;
       cursor: pointer;
-      transition: background 0.3s;
     }
 
-    .btn-modifica:hover {
-      background: #f5576c;
+    .btn-primary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
       color: white;
+      box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
     }
 
     /* Responsive */
@@ -189,7 +213,17 @@
         font-size: 28px;
       }
 
+      .user-actions-row {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .user-actions-row form {
+        margin-left: 0;
+      }
     }
+
   </style>
 </head>
 
@@ -210,23 +244,28 @@
       </div>
       <div class="user-details">
         <h1>${utente.username}</h1>
-        <div class="user-stats">
-          <div class="stat">
-            <div class="stat-value">${watchlistCount}</div>
-            <div class="stat-label">Film</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">${recensioniCount}</div>
-            <div class="stat-label">Recensioni</div>
-          </div>
-        </div>
+        <div class="user-actions-row">
 
-        <!-- Bottone Modifica account se l'utente è loggato e proprietario del profilo -->
-        <c:if test="${not empty sessionScope.utente and sessionScope.utente.idUtente == utente.idUtente}">
-          <form action="${pageContext.request.contextPath}/ModificaAccountServlet" method="get">
-            <button type="submit" class="btn-modifica">Modifica account</button>
-          </form>
-        </c:if>
+          <div class="user-stats">
+            <div class="stat">
+              <div class="stat-value">${watchlistCount}</div>
+              <div class="stat-label">Film</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">${recensioniCount}</div>
+              <div class="stat-label">Recensioni</div>
+            </div>
+          </div>
+
+          <c:if test="${not empty sessionScope.utente and sessionScope.utente.idUtente == utente.idUtente}">
+            <form action="${pageContext.request.contextPath}/ModificaAccountServlet" method="get">
+              <button type="submit" class="btn-header btn-primary">
+                Modifica Account
+              </button>
+            </form>
+          </c:if>
+
+        </div>
 
       </div>
     </div>

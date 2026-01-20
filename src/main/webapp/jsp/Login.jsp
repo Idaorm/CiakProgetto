@@ -1,5 +1,7 @@
 <%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<jsp:include page="/jsp/Header.jsp" />
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -7,7 +9,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Ciak!</title>
-
     <style>
         *, *::before, *::after { box-sizing: border-box; }
         body {
@@ -212,7 +213,7 @@
     </form>
 
     <div class="register-link">
-        Non hai un account? <a href="jsp/Registrazione.jsp">Registrati</a>
+        Non hai un account? <a href="<%=request.getContextPath()%>/RegistrazioneServlet">Registrati</a>
     </div>
 </div>
 

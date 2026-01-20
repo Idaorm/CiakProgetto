@@ -32,7 +32,7 @@ public class WatchlistServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         HttpSession session = request.getSession();
-        UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utenteLoggato");
+        UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
 
         if (utente == null) {
             response.sendRedirect(request.getContextPath() + "/jsp/Login.jsp");
