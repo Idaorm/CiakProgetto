@@ -338,21 +338,19 @@
         margin-left: 0;
       }
 
-      /* Le statistiche (Film salvati, Visti, ecc.) vanno in colonna o si rimpiccioliscono */
       .stats-container {
-        flex-direction: column; /* Una sotto l'altra */
+        flex-direction: column;
         gap: 10px;
       }
 
       .stat-card {
-        padding: 15px; /* Meno spazio interno */
+        padding: 15px;
       }
 
       .stat-card h2 {
-        font-size: 1.8rem; /* Numeri un po' più piccoli */
+        font-size: 1.8rem;
       }
 
-      /* La barra dei filtri deve poter scorrere se i tasti sono troppi */
       .filter-bar-wl {
         display: flex;
         overflow-x: auto;
@@ -366,14 +364,13 @@
         font-size: 14px;
       }
 
-      /* La griglia si adatta: minmax riduce la larghezza minima a 150px per schermi piccoli */
       .grid-container {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 15px;
       }
 
       .movie-card img {
-        height: 230px; /* Foto più bassa sui cellulari */
+        height: 230px;
       }
 
       .card-body-wl {

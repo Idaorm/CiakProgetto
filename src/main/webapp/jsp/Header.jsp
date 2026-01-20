@@ -102,11 +102,12 @@
     </div>
 
     <div class="header-right">
+        <a href="${pageContext.request.contextPath}/CatalogoServlet" class="btn-header btn-primary">Catalogo Film</a>
         <% if (!isLogged) { %>
         <a href="${pageContext.request.contextPath}/LoginServlet" class="btn-header btn-primary">Accedi</a>
         <a href="${pageContext.request.contextPath}/RegistrazioneServlet" class="btn-header btn-ghost">Registrati</a>
         <% } else { %>
-        <a href="${pageContext.request.contextPath}/AccountUtenteServlet" class="btn-header btn-primary">Account</a>
+        <a href="${pageContext.request.contextPath}/AccountUtenteServlet" class="btn-header btn-primary">Il mio Account</a>
         <a href="${pageContext.request.contextPath}/LogoutServlet" class="btn-header btn-ghost">Logout</a>
         <% } %>
     </div>

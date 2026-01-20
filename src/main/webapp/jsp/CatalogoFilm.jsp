@@ -202,6 +202,10 @@
     <form action="CatalogoServlet" method="GET" class="search-form">
         <input type="text" name="q" class="search-input" placeholder="Cerca film...">
     </form>
+
+    <form action="CercaUtentiServlet" method="GET" class="search-form">
+        <input type="text" name="q" class="search-input" placeholder="Cerca utenti...">
+    </form>
 </div>
 
 <div class="grid-container">
