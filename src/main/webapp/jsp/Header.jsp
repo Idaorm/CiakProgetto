@@ -101,7 +101,7 @@
     </div>
 
     <div class="header-right">
-        <a href="${pageContext.request.contextPath}/CatalogoServlet" class="btn-header btn-primary">Catalogo Film</a>
+        <a href="${pageContext.request.contextPath}/CatalogoServlet" class="btn-header btn-primary">Catalogo</a>
         <% if (!isLogged) { %>
         <a href="${pageContext.request.contextPath}/LoginServlet" class="btn-header btn-primary">Accedi</a>
         <a href="${pageContext.request.contextPath}/RegistrazioneServlet" class="btn-header btn-ghost">Registrati</a>

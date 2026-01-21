@@ -157,7 +157,7 @@
                             <c:otherwise>👤</c:otherwise>
                         </c:choose>
                     </div>
-                    <div class="username">@${u.username}</div>
+                    <div class="username">${u.username}</div>
                 </div>
 
             </c:forEach>
@@ -165,8 +165,7 @@
 
         <c:otherwise>
             <div style="grid-column: 1 / -1; text-align: center; color: #8b92a8; padding: 60px;">
-                <h2>Nessun utente trovato</h2>
-                <p>Prova con un nome o username diverso.</p>
+                <h2>Nessun utente trovato.</h2>
             </div>
         </c:otherwise>
     </c:choose>
