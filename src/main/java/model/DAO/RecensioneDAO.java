@@ -4,11 +4,9 @@ import model.Recensione;
 import util.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
-
-
-
 
 public class RecensioneDAO {
 
@@ -101,5 +99,30 @@ public class RecensioneDAO {
             e.printStackTrace();
         }
         return recensioniMap;
+    }
+    public Recensione doRetrieveByUtenteAndFilm(int idUtente, int idFilm) {
+        String sql = "SELECT rating, text, date, Id_utente, Id_film FROM Recensione WHERE Id_utente = ? AND Id_film = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idUtente);
+            ps.setInt(2, idFilm);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Recensione r = new Recensione();
+                    r.setRating(rs.getInt("rating"));
+                    r.setText(rs.getString("text"));
+                    r.setDate(rs.getDate("date"));
+                    r.setIdUtente(rs.getInt("Id_utente"));
+                    r.setIdFilm(rs.getInt("Id_film"));
+                    return r;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

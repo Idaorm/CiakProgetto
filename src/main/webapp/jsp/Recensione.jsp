@@ -1,17 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="model.UtenteRegistrato" %>
 <%
-
+    // Controllo Sessione
     UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
     if (utente == null) {
         response.sendRedirect(request.getContextPath() + "/jsp/Login.jsp");
         return;
     }
 
-
     String idTmdb = request.getParameter("idTmdb");
     String titolo = request.getParameter("titolo");
 
+    // Recuperiamo i parametri di esito dalla Servlet
+    String esito = request.getParameter("esito");
+    String msgErrore = request.getParameter("msg");
 
     if (idTmdb == null || titolo == null) {
         response.sendRedirect(request.getContextPath() + "/index.jsp");
@@ -39,7 +41,6 @@
             flex-direction: column;
             padding: 20px;
         }
-
 
         .review-container {
             max-width: 600px;
@@ -79,7 +80,6 @@
             color: #fff;
         }
 
-        /* Stile Input e Select */
         .custom-input, .custom-select {
             width: 100%;
             padding: 12px 15px;
@@ -89,7 +89,7 @@
             color: white;
             font-family: inherit;
             font-size: 15px;
-            box-sizing: border-box; /* Importante per il padding */
+            box-sizing: border-box;
             transition: border-color 0.2s;
         }
 
@@ -98,7 +98,6 @@
             border-color: #f5576c;
         }
 
-        /* Bottone invio */
         .btn-submit {
             width: 100%;
             padding: 14px;
@@ -129,6 +128,33 @@
         .btn-cancel:hover {
             color: white;
         }
+
+
+        .msg-box {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .msg-success {
+            background-color: rgba(46, 160, 67, 0.2);
+            border: 1px solid #2ea043;
+            color: #7ee787;
+        }
+
+        .msg-error {
+            background-color: rgba(218, 54, 51, 0.2);
+            border: 1px solid #da3633;
+            color: #f85149;
+        }
+
+        .link-return {
+            color: white;
+            text-decoration: underline;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -139,6 +165,17 @@
     <h2>La tua opinione conta</h2>
     <p class="subtitle">Stai recensendo: <strong><%= titolo %></strong></p>
 
+    <% if ("success".equals(esito)) { %>
+    <div class="msg-box msg-success">
+        Recensione pubblicata con successo! ✅
+        <br>
+        <a href="${pageContext.request.contextPath}/DettaglioServlet?id=movie&idTmdb=<%= idTmdb %>" class="link-return">Torna alla scheda del film</a>
+    </div>
+    <% } else if ("errore".equals(esito)) { %>
+    <div class="msg-box msg-error">
+        ⚠️ <%= (msgErrore != null) ? msgErrore : "Errore durante il salvataggio." %>
+    </div>
+    <% } %>
     <form action="${pageContext.request.contextPath}/RecensioneServlet" method="post">
 
         <input type="hidden" name="idTmdb" value="<%= idTmdb %>">
