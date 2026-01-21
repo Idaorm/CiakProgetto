@@ -37,22 +37,49 @@ public class AccountUtenteServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("utente") == null) {
-            response.sendRedirect(request.getContextPath() + "/jsp/Login.jsp");
-            return;
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        UtenteRegistrato utenteDaVisualizzare = null;
+
+        // Se esiste parametro id, cerchiamo l'utente dal DB
+        String idParam = request.getParameter("id");
+        if (idParam != null) {
+            try {
+                int idUtente = Integer.parseInt(idParam);
+                utenteDaVisualizzare = utenteDAO.getUtenteById(idUtente);
+                if (utenteDaVisualizzare == null) {
+                    request.setAttribute("errore", "Utente non trovato.");
+                    request.getRequestDispatcher("/jsp/RisultatiCercaUtenti.jsp").forward(request, response);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                request.setAttribute("errore", "ID utente non valido.");
+                request.getRequestDispatcher("/jsp/RisultatiCercaUtenti.jsp").forward(request, response);
+                return;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                request.setAttribute("errore", "Errore interno. Riprova più tardi.");
+                request.getRequestDispatcher("/jsp/RisultatiCercaUtenti.jsp").forward(request, response);
+                return;
+            }
+        } else {
+            // Altrimenti fallback al profilo dell'utente loggato
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("utente") == null) {
+                response.sendRedirect(request.getContextPath() + "/jsp/Login.jsp");
+                return;
+            }
+            utenteDaVisualizzare = (UtenteRegistrato) session.getAttribute("utente");
         }
 
-        UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
-
         try {
+            // Conteggi
+            int watchlistCount = utenteDAO.getWatchlistCount(utenteDaVisualizzare.getIdUtente());
+            int recensioniCount = utenteDAO.getRecensioniCount(utenteDaVisualizzare.getIdUtente());
 
-            int watchlistCount = utenteDAO.getWatchlistCount(utente.getIdUtente());
-            int recensioniCount = utenteDAO.getRecensioniCount(utente.getIdUtente());
-
-
-            List<WatchlistItem> watchlist = watchlistDAO.findByUtente(utente.getIdUtente());
+            // Watchlist dettagliata
+            List<WatchlistItem> watchlist = watchlistDAO.findByUtente(utenteDaVisualizzare.getIdUtente());
             service.TmdbService tmdbService = new service.TmdbService();
             List<TmdbMovie> moviesApi = new ArrayList<>();
 
@@ -76,18 +103,16 @@ public class AccountUtenteServlet extends HttpServlet {
                 }
             }
 
+            // Recensioni
+            LinkedHashMap<Recensione, String> recensioniMap = recensioneDAO.doRetrieveByUtente(utenteDaVisualizzare.getIdUtente());
 
-
-            LinkedHashMap<Recensione, String> recensioniMap = recensioneDAO.doRetrieveByUtente(utente.getIdUtente());
-
-
-
+            // Set attributi
             request.setAttribute("watchlistCount", watchlistCount);
             request.setAttribute("recensioniCount", recensioniCount);
             request.setAttribute("watchlist", watchlist);
             request.setAttribute("moviesApi", moviesApi);
             request.setAttribute("recensioniMap", recensioniMap);
-            request.setAttribute("utente", utente);
+            request.setAttribute("utente", utenteDaVisualizzare);
 
             request.getRequestDispatcher("/jsp/AccountUtente.jsp").forward(request, response);
 
@@ -99,7 +124,8 @@ public class AccountUtenteServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         doGet(request, response);
     }
 }

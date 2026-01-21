@@ -203,8 +203,8 @@
         <input type="text" name="q" class="search-input" placeholder="Cerca film...">
     </form>
 
-    <form action="CercaUtentiServlet" method="GET" class="search-form">
-        <input type="text" name="q" class="search-input" placeholder="Cerca utenti...">
+    <form action="${pageContext.request.contextPath}/CercaUtentiServlet" method="GET" class="search-form">
+        <input type="text" name="utenteDaCercare" class="search-input" placeholder="Cerca utenti...">
     </form>
 </div>
 

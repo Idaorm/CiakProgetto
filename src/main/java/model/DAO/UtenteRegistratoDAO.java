@@ -78,16 +78,27 @@ public class UtenteRegistratoDAO {
      * @throws SQLException
      */
     public UtenteRegistrato getUtenteById(int idUtente) throws SQLException {
-        String sql = "SELECT * FROM UtenteRegistrato WHERE Id_utente = ?";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setInt(1, idUtente);
-
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            return mapResultSetToUtente(rs);
+        UtenteRegistrato u = null;
+        String sql = "SELECT * FROM UtenteRegistrato WHERE id_utente = ?";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idUtente);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    u = new UtenteRegistrato();
+                    u.setIdUtente(rs.getInt("id_utente"));
+                    u.setUsername(rs.getString("username"));
+                    u.setEmail(rs.getString("email"));
+                    u.setPassword(rs.getString("password"));
+                    u.setPhoto(rs.getString("photo"));
+                    u.setBio(rs.getString("bio"));
+                    u.setWatchlistVisibility(rs.getBoolean("watchlistVisibility"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return null;
+        return u;
     }
 
     /**
@@ -100,9 +111,7 @@ public class UtenteRegistratoDAO {
         String sql = "SELECT * FROM UtenteRegistrato WHERE email = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, email);
-
         ResultSet rs = ps.executeQuery();
-
         if (rs.next()) {
             return mapResultSetToUtente(rs);
         }
@@ -159,7 +168,6 @@ public class UtenteRegistratoDAO {
             SET username = ?, email = ?, password = ?, photo = ?, bio = ?, watchlistVisibility = ?
             WHERE Id_utente = ?
         """;
-
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, u.getUsername());
         ps.setString(2, u.getEmail());
@@ -168,7 +176,6 @@ public class UtenteRegistratoDAO {
         ps.setString(5, u.getBio());
         ps.setBoolean(6, u.isWatchlistVisibility());
         ps.setInt(7, u.getIdUtente());
-
         ps.executeUpdate();
     }
 
@@ -179,29 +186,30 @@ public class UtenteRegistratoDAO {
      *         la lista è vuota se non viene trovato alcun utente.
      */
     public List<UtenteRegistrato> cercaUtenti(String query) {
-
         List<UtenteRegistrato> risultati = new ArrayList<>();
-
-        String sql = "SELECT * FROM utenti WHERE username LIKE ? OR nome LIKE ?";
-
+        String sql = """
+        SELECT id_utente, username, email, password, photo, bio, watchlistVisibility
+        FROM UtenteRegistrato
+        WHERE LOWER(username) LIKE ?
+        ORDER BY username
+        LIMIT 20
+        """;
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, "%" + query + "%");
-            ps.setString(2, "%" + query + "%");
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                UtenteRegistrato u = new UtenteRegistrato();
-                u.setIdUtente(rs.getInt("id"));
-                u.setUsername(rs.getString("username"));
-                risultati.add(u);
+            String parametro = "%" + query.toLowerCase() + "%";
+            ps.setString(1, parametro);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    UtenteRegistrato u = new UtenteRegistrato();
+                    u.setIdUtente(rs.getInt("id_utente"));
+                    u.setUsername(rs.getString("username"));
+                    u.setPhoto(rs.getString("photo"));
+                    risultati.add(u);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return risultati;
     }
 
