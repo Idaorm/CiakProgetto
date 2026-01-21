@@ -11,11 +11,9 @@ import model.WatchlistItem;
 import service.TmdbMovie;
 import model.DAO.WatchlistItemDAO;
 import model.DAO.FilmDAO;
-import model.Film;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -39,20 +37,41 @@ public class AccountUtenteServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("utente") == null) {
-            response.sendRedirect(request.getContextPath() + "/jsp/Login.jsp");
-            return;
-        }
+        UtenteRegistrato utenteLoggato = (session != null) ? (UtenteRegistrato) session.getAttribute("utente") : null;
 
-        UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
+
+        String idParam = request.getParameter("id");
+        UtenteRegistrato utenteDaVisualizzare = null;
 
         try {
+            if (idParam != null && !idParam.isEmpty()) {
+                // Sto visitando il profilo di qualcun altro
+                int idRichiesto = Integer.parseInt(idParam);
+                utenteDaVisualizzare = utenteDAO.getUtenteById(idRichiesto);
 
-            int watchlistCount = utenteDAO.getWatchlistCount(utente.getIdUtente());
-            int recensioniCount = utenteDAO.getRecensioniCount(utente.getIdUtente());
+            }
 
 
-            List<WatchlistItem> watchlist = watchlistDAO.findByUtente(utente.getIdUtente());
+            if (utenteDaVisualizzare == null) {
+                utenteDaVisualizzare = utenteLoggato;
+            }
+
+
+            if (utenteDaVisualizzare == null) {
+                response.sendRedirect(request.getContextPath() + "/jsp/Login.jsp");
+                return;
+            }
+
+            boolean isMyProfile = (utenteLoggato != null && utenteLoggato.getIdUtente() == utenteDaVisualizzare.getIdUtente());
+
+            int targetId = utenteDaVisualizzare.getIdUtente();
+
+            int watchlistCount = utenteDAO.getWatchlistCount(targetId);
+            int recensioniCount = utenteDAO.getRecensioniCount(targetId);
+            List<WatchlistItem> watchlist = watchlistDAO.findByUtente(targetId);
+
+            LinkedHashMap<Recensione, String> recensioniMap = recensioneDAO.doRetrieveByUtente(targetId);
+
             service.TmdbService tmdbService = new service.TmdbService();
             List<TmdbMovie> moviesApi = new ArrayList<>();
 
@@ -65,21 +84,16 @@ public class AccountUtenteServlet extends HttpServlet {
                             moviesApi.add(movie);
                         } else {
                             TmdbMovie errorMovie = new TmdbMovie();
-                            errorMovie.title="Dati TMDB non disponibili";
+                            errorMovie.title = "Dati TMDB non disponibili";
                             moviesApi.add(errorMovie);
                         }
                     } else {
                         TmdbMovie errorMovie = new TmdbMovie();
-                        errorMovie.title="Film non trovato nel catalogo";
+                        errorMovie.title = "Film non trovato nel catalogo";
                         moviesApi.add(errorMovie);
                     }
                 }
             }
-
-
-
-            LinkedHashMap<Recensione, String> recensioniMap = recensioneDAO.doRetrieveByUtente(utente.getIdUtente());
-
 
 
             request.setAttribute("watchlistCount", watchlistCount);
@@ -87,14 +101,17 @@ public class AccountUtenteServlet extends HttpServlet {
             request.setAttribute("watchlist", watchlist);
             request.setAttribute("moviesApi", moviesApi);
             request.setAttribute("recensioniMap", recensioniMap);
-            request.setAttribute("utente", utente);
+
+            request.setAttribute("profiloEsterno", utenteDaVisualizzare);
+
+            request.setAttribute("isMyProfile", isMyProfile);
 
             request.getRequestDispatcher("/jsp/AccountUtente.jsp").forward(request, response);
 
-        } catch (SQLException e) {
+        } catch (NumberFormatException | SQLException e) {
             e.printStackTrace();
-            request.setAttribute("errore", "Errore interno. Riprova più tardi.");
-            request.getRequestDispatcher("/jsp/Login.jsp").forward(request, response);
+            request.setAttribute("errore", "Errore nel recupero del profilo.");
+            request.getRequestDispatcher("/jsp/Error.jsp").forward(request, response);
         }
     }
 

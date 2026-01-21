@@ -2,15 +2,16 @@
 <%@ page import="java.util.LinkedHashMap" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="model.Recensione" %>
+<%@ page import="model.UtenteRegistrato" %>
 <%@ page import="java.net.URLEncoder" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-
 <%
-
     TmdbMovie f = (TmdbMovie) request.getAttribute("filmDettaglio");
 
-    LinkedHashMap<Recensione, String> recensioniMap = (LinkedHashMap<Recensione, String>) request.getAttribute("recensioniMap");
+    // NOTA: Ora recuperiamo una Mappa <Recensione, UtenteRegistrato>
+    LinkedHashMap<Recensione, UtenteRegistrato> recensioniMap =
+            (LinkedHashMap<Recensione, UtenteRegistrato>) request.getAttribute("recensioniMap");
 
     boolean hasPoster = (f != null && f.poster_path != null && !f.poster_path.isEmpty());
     String posterUrl = hasPoster
@@ -211,7 +212,6 @@
             font-weight: 600;
         }
 
-        /* --- STILE RECENSIONI --- */
         .reviews-section {
             border-top: 1px solid #2a3241;
             padding-top: 40px;
@@ -234,20 +234,48 @@
             align-items: flex-start;
         }
 
-        .avatar-circle {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            color: #000;
+        .review-header-link {
+            text-decoration: none;
+            display: block;
+            flex-shrink: 0;
+        }
+
+        .review-header-link:hover {
+            opacity: 0.8;
+        }
+
+        .username-text {
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .review-content {
+            flex: 1;
+        }
+
+        .avatar-container {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .review-avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .review-avatar-purple {
+            width: 100%;
+            height: 100%;
+            background-color: #8A2BE2;
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 900;
-            font-size: 20px;
-            text-transform: uppercase;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            flex-shrink: 0;
         }
 
         .no-reviews-msg {
@@ -347,23 +375,44 @@
 
         <div style="display: grid; gap: 20px;">
             <%
-                for (Map.Entry<Recensione, String> entry : recensioniMap.entrySet()) {
+                // Iteriamo sulla Mappa <Recensione, UtenteRegistrato>
+                for (Map.Entry<Recensione, UtenteRegistrato> entry : recensioniMap.entrySet()) {
                     Recensione r = entry.getKey();
-                    // String inizialeEmail = entry.getValue(); // Non ci serve più
+                    UtenteRegistrato autore = entry.getValue();
             %>
 
             <div class="review-card">
-                <div style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
 
-                        <div style="color: #ffd700; font-size: 14px;">
-                            <% for(int i=0; i<r.getRating(); i++) { %>★<% } %>
-                            <% for(int i=r.getRating(); i<5; i++) { %>☆<% } %>
+                <a href="${pageContext.request.contextPath}/AccountUtenteServlet?id=<%= autore.getIdUtente() %>" class="review-header-link">
+                    <div class="avatar-container">
+                        <% if (autore.getPhoto() != null && !autore.getPhoto().isEmpty()) { %>
+                        <img src="${pageContext.request.contextPath}/images/profilo/<%= autore.getPhoto() %>"
+                             alt="<%= autore.getUsername() %>" class="review-avatar-img">
+                        <% } else { %>
+                        <div class="review-avatar-purple">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="60%" height="60%">
+                                <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+                            </svg>
                         </div>
+                        <% } %>
+                    </div>
+                </a>
+
+                <div class="review-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+
+                        <a href="${pageContext.request.contextPath}/AccountUtenteServlet?id=<%= autore.getIdUtente() %>" style="text-decoration: none;">
+                            <span class="username-text"><%= autore.getUsername() %></span>
+                        </a>
 
                         <span style="color: #666; font-size: 12px;">
                             <%= r.getDate() %>
                         </span>
+                    </div>
+
+                    <div style="color: #ffd700; font-size: 14px; margin-bottom: 8px;">
+                        <% for(int i=0; i<r.getRating(); i++) { %>★<% } %>
+                        <% for(int i=r.getRating(); i<5; i++) { %>☆<% } %>
                     </div>
 
                     <p style="color: #e4e6eb; line-height: 1.5; margin: 0; font-size: 15px;">

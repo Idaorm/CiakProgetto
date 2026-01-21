@@ -182,7 +182,7 @@ public class UtenteRegistratoDAO {
 
         List<UtenteRegistrato> risultati = new ArrayList<>();
 
-        String sql = "SELECT * FROM utenti WHERE username LIKE ? OR nome LIKE ?";
+        String sql = "SELECT * FROM UtenteRegistrato WHERE username LIKE ? OR nome LIKE ?";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
