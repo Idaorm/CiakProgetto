@@ -10,9 +10,7 @@ public class Recensione {
     private int idUtente;
     private int idFilm;
 
-
     public Recensione() {}
-
 
     public Recensione(int rating, String text, Date date, int idUtente, int idFilm) {
         this.rating = rating;

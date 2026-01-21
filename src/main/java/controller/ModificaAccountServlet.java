@@ -36,7 +36,7 @@ public class ModificaAccountServlet extends HttpServlet {
         request.setAttribute("utente", utente);
         request.getRequestDispatcher("/jsp/ModificaAccount.jsp").forward(request, response);
     }
-    
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
@@ -47,13 +47,30 @@ public class ModificaAccountServlet extends HttpServlet {
 
         UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
 
-        // Parametri
+        // Controlla se l'utente vuole eliminare l'account
+        boolean deleteAccount = request.getParameter("deleteAccount") != null;
+        if (deleteAccount) {
+            try {
+                utenteDAO.deleteUtente(utente.getIdUtente());
+                // invalida la sessione e reindirizza alla home
+                session.invalidate();
+                response.sendRedirect(request.getContextPath() + "/CatalogoServlet");
+                return;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                request.setAttribute("errore", "Errore durante l'eliminazione dell'account. Riprova più tardi");
+                request.setAttribute("utente", utente);
+                request.getRequestDispatcher("/jsp/ModificaAccount.jsp").forward(request, response);
+                return;
+            }
+        }
+
+        // Parametri aggiornamento normale
         String username = request.getParameter("username");
         String bio = request.getParameter("bio");
         boolean watchlistVisibility = request.getParameter("watchlistVisibility") != null;
         boolean removePhoto = request.getParameter("removePhoto") != null;
 
-        // Validazione base
         if (username == null || username.isBlank()) {
             request.setAttribute("errore", "Username non valido");
             request.setAttribute("utente", utente);
@@ -63,43 +80,29 @@ public class ModificaAccountServlet extends HttpServlet {
 
         // Upload immagine
         Part photoPart = request.getPart("photo");
-        String photoFileName = utente.getPhoto(); // default = foto attuale
-
+        String photoFileName = utente.getPhoto();
         String uploadPath = getServletContext().getRealPath("/images/profilo");
 
-        // Se l'utente ha chiesto di rimuovere la foto
         if (removePhoto) {
-
             if (photoFileName != null) {
                 File oldFile = new File(uploadPath, photoFileName);
-                if (oldFile.exists()) {
-                    oldFile.delete(); // elimina file fisico
-                }
+                if (oldFile.exists()) oldFile.delete();
             }
-
-            photoFileName = null; // rimuove dal DB
+            photoFileName = null;
         }
 
-        // Se carica una nuova immagine (HA PRIORITÀ)
         if (photoPart != null && photoPart.getSize() > 0) {
-
-            String submittedFileName =
-                    Paths.get(photoPart.getSubmittedFileName()).getFileName().toString();
-
+            String submittedFileName = Paths.get(photoPart.getSubmittedFileName()).getFileName().toString();
             File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs();
-            }
+            if (!uploadDir.exists()) uploadDir.mkdirs();
 
-            String newFileName =
-                    "user_" + utente.getIdUtente() + "_" + System.currentTimeMillis()
-                            + submittedFileName.substring(submittedFileName.lastIndexOf("."));
-
+            String newFileName = "user_" + utente.getIdUtente() + "_" + System.currentTimeMillis()
+                    + submittedFileName.substring(submittedFileName.lastIndexOf("."));
             photoPart.write(uploadPath + File.separator + newFileName);
             photoFileName = newFileName;
         }
 
-        // aggiorna oggetto
+        // Aggiorna utente
         utente.setUsername(username);
         utente.setBio(bio);
         utente.setWatchlistVisibility(watchlistVisibility);
@@ -107,12 +110,8 @@ public class ModificaAccountServlet extends HttpServlet {
 
         try {
             utenteDAO.updateUtente(utente);
-
-            // aggiorna sessione
             session.setAttribute("utente", utente);
-
             response.sendRedirect(request.getContextPath() + "/AccountUtenteServlet");
-
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("errore", "Errore durante il salvataggio. Riprova più tardi");
@@ -120,5 +119,5 @@ public class ModificaAccountServlet extends HttpServlet {
             request.getRequestDispatcher("/jsp/ModificaAccount.jsp").forward(request, response);
         }
     }
-    
+
 }

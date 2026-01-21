@@ -47,4 +47,5 @@ public class UtenteRegistrato {
     public void setWatchlistVisibility(boolean watchlistVisibility) {
         this.watchlistVisibility = watchlistVisibility;
     }
+
 }

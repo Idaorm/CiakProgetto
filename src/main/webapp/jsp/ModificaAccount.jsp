@@ -1,7 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -324,6 +323,24 @@
               <small>
                 Se attiva, consentirai agli altri utenti Ciak! che visitano il tuo profilo
                 di vedere la tua Watchlist. In caso contrario, la tua lista di film sarà visibile solo a te.
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Elimina Account -->
+      <div class="form-group" style="margin-top:30px;">
+        <label>Disattiva Account</label>
+        <div class="option-card ">
+          <div class="option-row">
+            <input type="checkbox" id="deleteAccount" name="deleteAccount">
+            <div class="option-text">
+              <strong>Elimina Account</strong>
+              <small>
+                Se selezionato, il tuo account verrà disattivato.
+                Tutti i tuoi dati (incluse le tue recensioni e watchlist) saranno eliminati
+                e non sarà possibile recuperare il tuo account.
               </small>
             </div>
           </div>
