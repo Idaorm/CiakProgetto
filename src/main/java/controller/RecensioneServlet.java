@@ -20,8 +20,6 @@ import java.sql.SQLException;
 @WebServlet("/RecensioneServlet")
 public class RecensioneServlet extends HttpServlet {
 
-    private Facade facade = new Facade();
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -43,6 +41,17 @@ public class RecensioneServlet extends HttpServlet {
             int rating = Integer.parseInt(request.getParameter("rating"));
             String text = request.getParameter("text");
             String titoloEncoded = (titolo != null) ? URLEncoder.encode(titolo, StandardCharsets.UTF_8) : "";
+
+            Facade facade;
+            try {
+                facade = new Facade();
+            } catch (Exception e) {
+                String msg = "Il servizio non è disponibile. Riprova più tardi.";
+                response.sendRedirect("jsp/Recensione.jsp?idTmdb=" + idTmdb
+                        + "&titolo=" + titoloEncoded
+                        + "&esito=errore&msg=" + URLEncoder.encode(msg, StandardCharsets.UTF_8));
+                return;
+            }
 
             Film film = facade.findOrCreateFilm(idTmdb, titolo);
             Recensione recensione = new Recensione(
