@@ -8,8 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-import service.TmdbMovie;
-import service.TmdbService;
+import controller.service.TmdbMovie;
+import controller.service.TmdbService;
 
 @WebServlet("/CatalogoServlet")
 public class CatalogoServlet extends HttpServlet {

@@ -1,4 +1,4 @@
-<%@ page import="service.TmdbMovie" %>
+<%@ page import="controller.service.TmdbMovie" %>
 <%@ page import="java.util.LinkedHashMap" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="model.Recensione" %>

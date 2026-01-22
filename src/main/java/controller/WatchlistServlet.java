@@ -10,8 +10,8 @@ import jakarta.servlet.http.HttpSession;
 import model.Recensione;
 import model.UtenteRegistrato;
 import model.WatchlistItem;
-import service.Facade;
-import service.TmdbMovie;
+import controller.service.Facade;
+import controller.service.TmdbMovie;
 
 import java.io.IOException;
 import java.util.List;

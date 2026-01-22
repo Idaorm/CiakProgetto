@@ -1,4 +1,4 @@
-package service;
+package controller.service;
 
 import com.google.gson.Gson;
 import java.net.URI;

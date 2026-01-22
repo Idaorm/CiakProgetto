@@ -1,5 +1,5 @@
 <%@ page import="java.util.List" %>
-<%@ page import="service.TmdbMovie" %>
+<%@ page import="controller.service.TmdbMovie" %>
 <%@ page import="model.UtenteRegistrato" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 

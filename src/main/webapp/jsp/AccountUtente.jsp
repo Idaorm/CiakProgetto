@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ page import="java.util.*, model.WatchlistItem, service.TmdbMovie, model.UtenteRegistrato" %>
+<%@ page import="java.util.*, model.WatchlistItem, controller.service.TmdbMovie, model.UtenteRegistrato" %>
 
 
 <!DOCTYPE html>
@@ -156,7 +156,7 @@
             if (items != null && movies != null) {
               for (int i = 0; i < items.size() && i < movies.size(); i++) {
                 model.WatchlistItem it = items.get(i);
-                service.TmdbMovie m = movies.get(i);
+                controller.service.TmdbMovie m = movies.get(i);
                 if (m != null && m.title != null) {
                   String statusClass = it.isStatus() ? "visto" : "da-vedere";
                   String year = (m.release_date != null && m.release_date.length() >= 4) ? m.release_date.substring(0, 4) : "N/D";

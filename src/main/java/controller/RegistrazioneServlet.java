@@ -4,7 +4,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
-import service.Facade;
+import controller.service.Facade;
 
 import java.io.IOException;
 import java.sql.SQLException;

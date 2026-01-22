@@ -8,10 +8,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
-import service.TmdbService;
+import controller.service.TmdbService;
 import model.Recensione;
 import model.UtenteRegistrato;
-import service.Facade;
+import controller.service.Facade;
 
 @WebServlet("/DettaglioServlet")
 public class DettaglioServlet extends HttpServlet {

@@ -1,4 +1,4 @@
-package service;
+package controller.service;
 
 import model.DAO.FilmDAO;
 import model.DAO.RecensioneDAO;

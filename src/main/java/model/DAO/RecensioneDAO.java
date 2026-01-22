@@ -2,7 +2,7 @@ package model.DAO;
 
 import model.Recensione;
 import model.UtenteRegistrato; // Importante: ora usiamo questo modello
-import util.DBConnection;
+import controller.util.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

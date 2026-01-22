@@ -10,12 +10,11 @@ import jakarta.servlet.http.HttpSession;
 import model.Film;
 import model.Recensione;
 import model.UtenteRegistrato;
-import service.Facade;
+import controller.service.Facade;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 
 @WebServlet("/RecensioneServlet")
 public class RecensioneServlet extends HttpServlet {
