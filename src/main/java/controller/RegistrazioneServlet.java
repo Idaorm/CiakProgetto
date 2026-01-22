@@ -14,14 +14,6 @@ import java.util.List;
 @WebServlet("/RegistrazioneServlet")
 public class RegistrazioneServlet extends HttpServlet {
 
-    private Facade facade;
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        facade = new Facade();
-    }
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -31,6 +23,15 @@ public class RegistrazioneServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        Facade facade;
+        try {
+            facade = new Facade();
+        } catch (Exception e) {
+            request.setAttribute("errore", "Il servizio non è disponibile. Riprova più tardi.");
+            request.getRequestDispatcher("/jsp/Registrazione.jsp").forward(request, response);
+            return;
+        }
 
         String email = request.getParameter("email");
         String password = request.getParameter("password").trim();

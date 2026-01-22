@@ -16,14 +16,6 @@ import java.sql.SQLException;
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
 
-    private Facade facade;
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        facade = new Facade();
-    }
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -34,9 +26,19 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        Facade facade;
+        try {
+            facade = new Facade();
+        } catch (Exception e) {
+            request.setAttribute("errore", "Il servizio non è disponibile. Riprova più tardi.");
+            request.getRequestDispatcher("/jsp/Login.jsp").forward(request, response);
+            return;
+        }
+
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
+        // validazione input
         if (email == null || email.isBlank() || password == null || password.isBlank()) {
             request.setAttribute("errore", "Email e password sono obbligatorie.");
             request.getRequestDispatcher("/jsp/Login.jsp").forward(request, response);
@@ -44,20 +46,30 @@ public class LoginServlet extends HttpServlet {
         }
 
         try {
+
             UtenteRegistrato utente = facade.login(email, password);
 
             if (utente != null) {
+                // login riuscito, creo sessione
                 HttpSession session = request.getSession();
                 session.setAttribute("utente", utente);
                 response.sendRedirect(request.getContextPath() + "/CatalogoServlet");
             } else {
+                // credenziali errate
                 request.setAttribute("errore", "Email o password non valide.");
                 request.getRequestDispatcher("/jsp/Login.jsp").forward(request, response);
             }
 
         } catch (SQLException e) {
+            // problema lato DB
             e.printStackTrace();
-            request.setAttribute("errore", "Errore interno. Riprova più tardi.");
+            request.setAttribute("errore", "Attualmente il servizio non è disponibile. Riprova più tardi.");
+            request.getRequestDispatcher("/jsp/Login.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            // qualsiasi altro errore
+            e.printStackTrace();
+            request.setAttribute("errore", "Si è verificato un problema. Riprova più tardi.");
             request.getRequestDispatcher("/jsp/Login.jsp").forward(request, response);
         }
     }
