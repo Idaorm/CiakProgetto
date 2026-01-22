@@ -16,7 +16,8 @@
     String msgErrore = request.getParameter("msg");
 
     if (idTmdb == null || titolo == null) {
-        response.sendRedirect(request.getContextPath() + "/index.jsp");
+        response.sendRedirect(request.getContextPath() + "/CatalogoServlet" +
+                "");
         return;
     }
 %>

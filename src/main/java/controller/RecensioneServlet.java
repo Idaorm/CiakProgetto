@@ -33,27 +33,20 @@ public class RecensioneServlet extends HttpServlet {
         }
 
         String idTmdbStr = request.getParameter("idTmdb");
-        String titolo = request.getParameter("titolo");
+        String titoloInput = request.getParameter("titolo");
+        String ratingStr = request.getParameter("rating");
+        String text = request.getParameter("text");
 
         try {
-
             int idTmdb = Integer.parseInt(idTmdbStr);
-            int rating = Integer.parseInt(request.getParameter("rating"));
-            String text = request.getParameter("text");
-            String titoloEncoded = (titolo != null) ? URLEncoder.encode(titolo, StandardCharsets.UTF_8) : "";
+            int rating = Integer.parseInt(ratingStr);
 
-            Facade facade;
-            try {
-                facade = new Facade();
-            } catch (Exception e) {
-                String msg = "Il servizio non è disponibile. Riprova più tardi.";
-                response.sendRedirect("jsp/Recensione.jsp?idTmdb=" + idTmdb
-                        + "&titolo=" + titoloEncoded
-                        + "&esito=errore&msg=" + URLEncoder.encode(msg, StandardCharsets.UTF_8));
-                return;
-            }
+            Facade facade = new Facade();
+            Film film = facade.findOrCreateFilm(idTmdb, null);
 
-            Film film = facade.findOrCreateFilm(idTmdb, titolo);
+            String titoloReale = (film != null) ? film.getTitolo() : "Dettaglio";
+            String titoloEncoded = URLEncoder.encode(titoloReale, StandardCharsets.UTF_8);
+
             Recensione recensione = new Recensione(
                     rating,
                     text,
@@ -65,40 +58,25 @@ public class RecensioneServlet extends HttpServlet {
             boolean successo = facade.salvaRecensione(recensione);
 
             if (!successo) {
-                // recensione già presente
                 String msg = "Hai già scritto una recensione per questo film!";
-                response.sendRedirect("jsp/Recensione.jsp?idTmdb=" + idTmdb
+                response.sendRedirect("jsp/Recensione.jsp?idTmdb=" + idTmdbStr
                         + "&titolo=" + titoloEncoded
                         + "&esito=errore&msg=" + URLEncoder.encode(msg, StandardCharsets.UTF_8));
                 return;
             }
 
-            // segna il film come visto
             facade.marcaComeVisto(utente.getIdUtente(), film.getIdFilm());
 
-            // tutto OK
-            response.sendRedirect("jsp/Recensione.jsp?idTmdb=" + idTmdb
+            response.sendRedirect("jsp/Recensione.jsp?idTmdb=" + idTmdbStr
                     + "&titolo=" + titoloEncoded
                     + "&esito=success");
 
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            String msg = "Errore durante il salvataggio della recensione. Parametri non validi.";
-            response.sendRedirect("jsp/Recensione.jsp?idTmdb=" + idTmdbStr
-                    + "&titolo=" + ((titolo != null) ? URLEncoder.encode(titolo, StandardCharsets.UTF_8) : "")
-                    + "&esito=errore&msg=" + URLEncoder.encode(msg, StandardCharsets.UTF_8));
-        } catch (SQLException e) {
-            e.printStackTrace();
-            String msg = "Errore interno durante il salvataggio della recensione.";
-            response.sendRedirect("jsp/Recensione.jsp?idTmdb=" + idTmdbStr
-                    + "&titolo=" + ((titolo != null) ? URLEncoder.encode(titolo, StandardCharsets.UTF_8) : "")
-                    + "&esito=errore&msg=" + URLEncoder.encode(msg, StandardCharsets.UTF_8));
         } catch (Exception e) {
             e.printStackTrace();
-            String msg = "Errore imprevisto durante il salvataggio della recensione.";
+
             response.sendRedirect("jsp/Recensione.jsp?idTmdb=" + idTmdbStr
-                    + "&titolo=" + ((titolo != null) ? URLEncoder.encode(titolo, StandardCharsets.UTF_8) : "")
-                    + "&esito=errore&msg=" + URLEncoder.encode(msg, StandardCharsets.UTF_8));
+                    + "&titolo=" + URLEncoder.encode("ErroreID", StandardCharsets.UTF_8)
+                    + "&esito=errore&msg=" + URLEncoder.encode("Impossibile trovare il film. ID non valido.", StandardCharsets.UTF_8));
         }
     }
 }
