@@ -1,5 +1,6 @@
 <%@ page import="java.util.List" %>
 <%@ page import="service.TmdbMovie" %>
+<%@ page import="model.UtenteRegistrato" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!DOCTYPE html>
@@ -203,9 +204,19 @@
         <input type="text" name="q" class="search-input" placeholder="Cerca film...">
     </form>
 
+    <%
+        UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
+        if (utente != null) {
+    %>
+
     <form action="${pageContext.request.contextPath}/CercaUtentiServlet" method="GET" class="search-form">
         <input type="text" name="utenteDaCercare" class="search-input" placeholder="Cerca utenti...">
     </form>
+
+    <%
+        }
+    %>
+
 </div>
 
 <div class="grid-container">

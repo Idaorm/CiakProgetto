@@ -1,9 +1,11 @@
 package controller;
+
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-import model.DAO.UtenteRegistratoDAO;
+
 import model.UtenteRegistrato;
+import service.Facade;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,33 +14,38 @@ import java.sql.SQLException;
 
 @WebServlet(name = "ModificaAccountServlet", value = "/ModificaAccountServlet")
 @MultipartConfig(
-        fileSizeThreshold = 1024 * 1024,      // 1MB
-        maxFileSize = 1024 * 1024 * 5,         // 5MB
-        maxRequestSize = 1024 * 1024 * 10      // 10MB
+        fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 1024 * 1024 * 5,
+        maxRequestSize = 1024 * 1024 * 10
 )
 public class ModificaAccountServlet extends HttpServlet {
 
-    private UtenteRegistratoDAO utenteDAO;
+    private Facade facade;
 
     @Override
     public void init() throws ServletException {
-        utenteDAO = new UtenteRegistratoDAO();
+        facade = new Facade();
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("utente") == null) {
             response.sendRedirect(request.getContextPath() + "/LoginServlet");
             return;
         }
+
         UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
         request.setAttribute("utente", utente);
         request.getRequestDispatcher("/jsp/ModificaAccount.jsp").forward(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("utente") == null) {
             response.sendRedirect(request.getContextPath() + "/LoginServlet");
@@ -47,12 +54,10 @@ public class ModificaAccountServlet extends HttpServlet {
 
         UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
 
-        // Controlla se l'utente vuole eliminare l'account
-        boolean deleteAccount = request.getParameter("deleteAccount") != null;
-        if (deleteAccount) {
+        // controllo se l'utente vuole eliminare l'account
+        if (request.getParameter("deleteAccount") != null) {
             try {
-                utenteDAO.deleteUtente(utente.getIdUtente());
-                // invalida la sessione e reindirizza alla home
+                facade.eliminaUtente(utente.getIdUtente());
                 session.invalidate();
                 response.sendRedirect(request.getContextPath() + "/CatalogoServlet");
                 return;
@@ -65,7 +70,7 @@ public class ModificaAccountServlet extends HttpServlet {
             }
         }
 
-        // Parametri aggiornamento normale
+        // aggiornamento account
         String username = request.getParameter("username");
         String bio = request.getParameter("bio");
         boolean watchlistVisibility = request.getParameter("watchlistVisibility") != null;
@@ -78,7 +83,7 @@ public class ModificaAccountServlet extends HttpServlet {
             return;
         }
 
-        // Upload immagine
+        // upload immagine
         Part photoPart = request.getPart("photo");
         String photoFileName = utente.getPhoto();
         String uploadPath = getServletContext().getRealPath("/images/profilo");
@@ -102,14 +107,13 @@ public class ModificaAccountServlet extends HttpServlet {
             photoFileName = newFileName;
         }
 
-        // Aggiorna utente
         utente.setUsername(username);
         utente.setBio(bio);
         utente.setWatchlistVisibility(watchlistVisibility);
         utente.setPhoto(photoFileName);
 
         try {
-            utenteDAO.updateUtente(utente);
+            facade.aggiornaUtente(utente);
             session.setAttribute("utente", utente);
             response.sendRedirect(request.getContextPath() + "/AccountUtenteServlet");
         } catch (SQLException e) {
@@ -119,5 +123,4 @@ public class ModificaAccountServlet extends HttpServlet {
             request.getRequestDispatcher("/jsp/ModificaAccount.jsp").forward(request, response);
         }
     }
-
 }

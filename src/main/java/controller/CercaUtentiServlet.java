@@ -3,14 +3,23 @@ package controller;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-import model.DAO.UtenteRegistratoDAO;
+
 import model.UtenteRegistrato;
+import service.Facade;
 
 import java.io.IOException;
 import java.util.List;
 
 @WebServlet(name = "CercaUtentiServlet", value = "/CercaUtentiServlet")
 public class CercaUtentiServlet extends HttpServlet {
+
+    private Facade facade;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        facade = new Facade();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,8 +39,7 @@ public class CercaUtentiServlet extends HttpServlet {
             return;
         }
 
-        UtenteRegistratoDAO utenteDAO = new UtenteRegistratoDAO();
-        List<UtenteRegistrato> utenti = utenteDAO.cercaUtenti(query.trim());
+        List<UtenteRegistrato> utenti = facade.cercaUtenti(query.trim());
 
         request.setAttribute("utenti", utenti);
 

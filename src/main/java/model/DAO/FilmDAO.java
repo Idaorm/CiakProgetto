@@ -75,6 +75,7 @@ public class FilmDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0; // Indica che il film non è stato trovato
+        return 0; // film non trovato
     }
+
 }
