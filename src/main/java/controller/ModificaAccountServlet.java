@@ -20,13 +20,6 @@ import java.sql.SQLException;
 )
 public class ModificaAccountServlet extends HttpServlet {
 
-    private Facade facade;
-
-    @Override
-    public void init() throws ServletException {
-        facade = new Facade();
-    }
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -45,6 +38,15 @@ public class ModificaAccountServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        Facade facade;
+        try {
+            facade = new Facade();
+        } catch (Exception e) {
+            request.setAttribute("errore", "Il servizio non è disponibile. Riprova più tardi.");
+            request.getRequestDispatcher("/jsp/ModificaAccount.jsp").forward(request, response);
+            return;
+        }
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("utente") == null) {

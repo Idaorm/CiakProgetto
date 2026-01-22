@@ -13,19 +13,18 @@ import java.util.List;
 @WebServlet(name = "CercaUtentiServlet", value = "/CercaUtentiServlet")
 public class CercaUtentiServlet extends HttpServlet {
 
-    private Facade facade;
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        facade = new Facade();
-    }
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        request.setCharacterEncoding("UTF-8");
+        Facade facade;
+        try {
+            facade = new Facade();
+        } catch (Exception e) {
+            request.setAttribute("errore", "Il servizio non è disponibile. Riprova più tardi.");
+            request.getRequestDispatcher("/jsp/RisultatiCercaUtenti.jsp").forward(request, response);
+            return;
+        }
 
         String query = request.getParameter("utenteDaCercare");
 

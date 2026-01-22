@@ -14,17 +14,18 @@ import java.util.Map;
 @WebServlet(name = "AccountUtenteServlet", value = "/AccountUtenteServlet")
 public class AccountUtenteServlet extends HttpServlet {
 
-    private Facade facade;
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        this.facade = new Facade();
-    }
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        Facade facade;
+        try {
+            facade = new Facade();
+        } catch (Exception e) {
+            request.setAttribute("errore", "Il servizio non è disponibile. Riprova più tardi.");
+            request.getRequestDispatcher("/jsp/AccountUtente.jsp").forward(request, response);
+            return;
+        }
 
         UtenteRegistrato utenteDaVisualizzare = null;
 

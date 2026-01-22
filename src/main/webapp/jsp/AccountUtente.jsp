@@ -45,6 +45,13 @@
 <div class="container">
   <section class="profile-header">
     <div class="profile-info">
+
+      <c:if test="${not empty errore}">
+        <div style="grid-column: 1 / -1; text-align: center; color: #f5576c; padding: 20px;">
+          <strong>${errore}</strong>
+        </div>
+      </c:if>
+
       <div class="avatar">
         <c:choose>
           <c:when test="${not empty utente.photo}">
