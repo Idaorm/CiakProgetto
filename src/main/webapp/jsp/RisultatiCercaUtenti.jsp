@@ -94,24 +94,11 @@
             font-weight: 700;
             color: white;
             margin-bottom: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .btn-profile {
-            display: inline-block;
-            border: 1px solid #f093fb;
-            color: #f093fb;
-            padding: 10px 18px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-profile:hover {
-            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            border-color: transparent;
-        }
     </style>
 </head>
 
@@ -157,7 +144,7 @@
                             <c:otherwise>👤</c:otherwise>
                         </c:choose>
                     </div>
-                    <div class="username">${u.username}</div>
+                    <div class="username" title="${u.username}">${u.username}</div>
                 </div>
 
             </c:forEach>
