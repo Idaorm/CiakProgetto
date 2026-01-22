@@ -20,16 +20,19 @@ import java.util.Map;
 @WebServlet("/WatchlistServlet")
 public class WatchlistServlet extends HttpServlet {
 
-    private Facade facade;
-
-    @Override
-    public void init() {
-        this.facade = new Facade();
-    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        Facade facade;
+        try {
+            facade = new Facade();
+        } catch (Exception e) {
+            request.setAttribute("errore", "Il servizio non è disponibile. Riprova più tardi.");
+            request.getRequestDispatcher("/jsp/Login.jsp").forward(request, response);
+            return;
+        }
 
         HttpSession session = request.getSession();
         UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
