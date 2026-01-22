@@ -72,7 +72,7 @@ public class WatchlistServlet extends HttpServlet {
         request.setAttribute("utente", utente);
         request.setAttribute("watchlist", items);
         request.setAttribute("moviesApi", moviesApi);
-        request.setAttribute("recensioni", recensioniUtente);
+        request.setAttribute("recensioniMap", recensioniUtente);
         request.setAttribute("watchlistCount", items.size());
         request.setAttribute("recensioniCount", recensioniUtente.size());
 
