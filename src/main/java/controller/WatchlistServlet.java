@@ -47,7 +47,7 @@ public class WatchlistServlet extends HttpServlet {
                 int idTmdb = Integer.parseInt(request.getParameter("idTmdb"));
                 String titolo = request.getParameter("titolo");
                 facade.aggiungiFilmAllaWatchlist(utente.getIdUtente(), idTmdb, titolo);
-                response.sendRedirect(request.getContextPath() + "/WatchlistServlet");
+                response.sendRedirect(request.getContextPath() + "/CatalogoServlet");
                 return;
             } else if ("toggle".equals(action)) {
                 int idItem = Integer.parseInt(request.getParameter("idItem"));

@@ -183,6 +183,19 @@
             box-shadow: 0 0 15px rgba(240, 147, 251, 0.4);
         }
 
+        .btn-added-state {
+            display: block;
+            background-color: #1f2533;
+            border: 1px solid #28a745;
+            color: #28a745;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: default;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+        }
+
         @media (max-width: 768px) {
             .header-row {
                 flex-direction: column;
@@ -253,8 +266,21 @@
                 <span><%= year %></span>
                 <span class="rating-badge">★ <%= f.vote_average %></span>
             </div>
+            <%
 
-            <a href="WatchlistServlet?action=add&idTmdb=<%= f.id %>&titolo=<%= java.net.URLEncoder.encode(f.title, "UTF-8") %>" class="btn-add">+ Aggiungi</a>
+                java.util.Set<Integer> idsInWatchlist = (java.util.Set<Integer>) request.getAttribute("idsInWatchlist");
+
+                boolean giaAggiunto = (idsInWatchlist != null && idsInWatchlist.contains(f.id));
+
+                if (giaAggiunto) {
+            %>
+            <div class="btn-added-state">Già aggiunto</div>
+            <% } else { %>
+            <a href="WatchlistServlet?action=add&idTmdb=<%= f.id %>&titolo=<%= java.net.URLEncoder.encode(f.title, "UTF-8") %>"
+               class="btn-add">
+                + Aggiungi
+            </a>
+            <% } %>
         </div>
     </div>
     <%

@@ -1,7 +1,7 @@
 package model.DAO;
 
 import model.UtenteRegistrato;
-import controller.util.DBConnection;
+import util.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;

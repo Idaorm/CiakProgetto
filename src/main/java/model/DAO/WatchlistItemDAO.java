@@ -1,7 +1,7 @@
 package model.DAO;
 
 import model.WatchlistItem;
-import controller.util.DBConnection;
+import util.DBConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

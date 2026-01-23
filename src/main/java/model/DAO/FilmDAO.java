@@ -1,7 +1,7 @@
 package model.DAO;
 
 import model.Film;
-import controller.util.DBConnection;
+import util.DBConnection;
 
 import java.sql.*;
 
