@@ -170,7 +170,7 @@
     <div class="msg-box msg-success">
         Recensione pubblicata con successo! ✅
         <br>
-        <a href="${pageContext.request.contextPath}/DettaglioServlet?id=movie&idTmdb=<%= idTmdb %>" class="link-return">Torna alla scheda del film</a>
+        <a href="${pageContext.request.contextPath}/DettaglioServlet?idTmdb=<%= idTmdb %>" class="link-return">Torna alla scheda del film</a>
     </div>
     <% } else if ("errore".equals(esito)) { %>
     <div class="msg-box msg-error">
