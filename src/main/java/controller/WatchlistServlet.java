@@ -46,8 +46,13 @@ public class WatchlistServlet extends HttpServlet {
             if ("add".equals(action)) {
                 int idTmdb = Integer.parseInt(request.getParameter("idTmdb"));
                 String titolo = request.getParameter("titolo");
+                String provenienza = request.getParameter("provenienza");
                 facade.aggiungiFilmAllaWatchlist(utente.getIdUtente(), idTmdb, titolo);
-                response.sendRedirect(request.getContextPath() + "/CatalogoServlet");
+                if ("dettaglio".equals(provenienza)) {
+                    response.sendRedirect(request.getContextPath() + "/DettaglioServlet?idTmdb="+idTmdb);
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/CatalogoServlet");
+                }
                 return;
             } else if ("toggle".equals(action)) {
                 int idItem = Integer.parseInt(request.getParameter("idItem"));

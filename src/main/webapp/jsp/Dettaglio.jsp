@@ -8,6 +8,8 @@
 
 <%
     TmdbMovie f = (TmdbMovie) request.getAttribute("filmDettaglio");
+    Boolean giaInWatchlist = (Boolean) request.getAttribute("giaInWatchlist");
+    if (giaInWatchlist == null) giaInWatchlist = false;
 
     // NOTA: Ora recuperiamo una Mappa <Recensione, UtenteRegistrato>
     LinkedHashMap<Recensione, UtenteRegistrato> recensioniMap =
@@ -160,6 +162,19 @@
             background-color: #f093fb;
             color: white;
             box-shadow: 0 0 15px rgba(240, 147, 251, 0.4);
+        }
+
+        .btn-added-state {
+            display: block;
+            background-color: #1f2533;
+            border: 1px solid #28a745;
+            color: #28a745;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: default;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
         }
 
         .plot-box {
@@ -319,17 +334,23 @@
             </div>
 
             <div class="action-buttons">
-                <a href="WatchlistServlet?action=add&idTmdb=<%= f.id %>&titolo=<%= encodedTitle %>" class="btn-gradient">
-                    + Aggiungi alla lista
-                </a>
+                <% if (giaInWatchlist) { %>
+                <div class="btn-added-state">
+                    <span style="margin-right: 8px;">✓</span> In Watchlist
+                </div>
+                <% } else { %>
+                    <a href="WatchlistServlet?action=add&provenienza=dettaglio&idTmdb=<%= f.id %>&titolo=<%= encodedTitle %>" class="btn-gradient">
+                        + Aggiungi alla lista
+                    </a>
+                    <% } %>
 
-                <a href="${pageContext.request.contextPath}/jsp/Recensione.jsp?idTmdb=<%= f.id %>&titolo=<%= encodedTitle %>" class="btn-review">
+                     <a href="${pageContext.request.contextPath}/jsp/Recensione.jsp?idTmdb=<%= f.id %>&titolo=<%= encodedTitle %>" class="btn-review">
                     Aggiungi recensione
-                </a>
+                    </a>
 
-                <a href="${pageContext.request.contextPath}/CatalogoServlet" class="btn-outline">
+                    <a href="${pageContext.request.contextPath}/CatalogoServlet" class="btn-outline">
                     ← Indietro
-                </a>
+                     </a>
             </div>
 
             <div class="plot-box">

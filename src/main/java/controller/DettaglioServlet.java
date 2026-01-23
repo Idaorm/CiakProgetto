@@ -1,5 +1,6 @@
 package controller;
 
+import controller.service.TmdbMovie;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -7,11 +8,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import controller.service.TmdbService;
+import jakarta.servlet.http.HttpSession;
 import model.Recensione;
 import model.UtenteRegistrato;
 import controller.service.Facade;
+
 
 @WebServlet("/DettaglioServlet")
 public class DettaglioServlet extends HttpServlet {
@@ -21,7 +25,33 @@ public class DettaglioServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+        UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
+        boolean giaInWatchlist = false;
+
         String id = request.getParameter("id");
+        if (id == null || id.isEmpty()) {
+            id = request.getParameter("idTmdb");
+        }
+
+
+        if (id != null && !id.isEmpty()) {
+            int idFilmDettaglio = Integer.parseInt(id);
+            if (utente != null) {
+                List<TmdbMovie> watchlist = facade.getWatchlistCompleta(utente.getIdUtente());
+                if (watchlist != null) {
+                    for (TmdbMovie m : watchlist) {
+                        if (m.id == idFilmDettaglio) {
+                            giaInWatchlist = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        request.setAttribute("giaInWatchlist", giaInWatchlist);
+
 
         if (id != null && !id.isEmpty()) {
             try {
