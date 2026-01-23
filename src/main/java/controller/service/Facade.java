@@ -29,6 +29,19 @@ public class Facade {
         this.watchlistDAO = new WatchlistItemDAO();
     }
 
+    public Facade(UtenteRegistratoDAO utenteDAO,
+                  FilmDAO filmDAO,
+                  TmdbService tmdbService,
+                  RecensioneDAO recensioneDAO,
+                  WatchlistItemDAO watchlistDAO) {
+
+        this.utenteDAO = utenteDAO;
+        this.filmDAO = filmDAO;
+        this.tmdbService = tmdbService;
+        this.recensioneDAO = recensioneDAO;
+        this.watchlistDAO = watchlistDAO;
+    }
+
     // REGISTRAZIONE
     public boolean registraUtente(String email, String password) throws SQLException {
         if (utenteDAO.emailGiaRegistrata(email)) {
