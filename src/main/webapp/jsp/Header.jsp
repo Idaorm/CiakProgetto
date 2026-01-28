@@ -90,6 +90,62 @@
         box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
     }
 
+    @media (max-width: 900px) {
+
+        .main-header {
+            padding: 0 20px;
+        }
+
+        .btn-header {
+            padding: 8px 18px;
+            font-size: 14px;
+        }
+
+        .header-logo-text {
+            font-size: 22px;
+        }
+    }
+
+    @media (max-width: 600px) {
+
+        .main-header {
+            flex-direction: column;
+            height: auto;
+            padding: 15px;
+            gap: 15px;
+        }
+
+        .header-left,
+        .header-right {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .logo-wrapper {
+            justify-content: center;
+        }
+
+        .header-right {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-header {
+            width: 100%;
+            text-align: center;
+            padding: 12px;
+            font-size: 15px;
+        }
+
+        .logo-img {
+            height: 45px;
+        }
+
+        .header-logo-text {
+            font-size: 20px;
+        }
+    }
+
 </style>
 
 <header class="main-header">

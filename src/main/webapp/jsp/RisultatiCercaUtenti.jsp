@@ -99,6 +99,60 @@
             text-overflow: ellipsis;
         }
 
+        @media (max-width: 1024px) {
+
+            .header-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 20px;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .title-group h1 {
+                font-size: 2rem;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .header-row {
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+            }
+
+            .title-group h1 {
+                font-size: 1.6rem;
+                letter-spacing: 1px;
+            }
+
+            .grid-container {
+                gap: 16px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .avatar {
+                width: 72px;
+                height: 72px;
+                font-size: 2rem;
+                margin-bottom: 10px;
+            }
+
+            .username {
+                font-size: 1.1rem;
+            }
+        }
+
     </style>
 </head>
 
