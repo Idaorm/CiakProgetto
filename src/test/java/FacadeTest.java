@@ -144,13 +144,22 @@ public class FacadeTest {
     // -------- WATCHLIST --------
     @Test
     void aggiungiFilmAllaWatchlist_shouldAddFilmForUser() {
+        // SETUP
+        int idTmdb = 100;
+        String titoloInput = "Matrix";
+        String titoloReale = "The Matrix";
+
+        TmdbMovie movieMock = new TmdbMovie();
+        movieMock.title = titoloReale;
+        when(tmdbService.getMovieDetails(idTmdb)).thenReturn(movieMock);
+
         Film film = new Film();
         film.setIdFilm(10);
-        when(filmDAO.findOrCreate(100, "Matrix")).thenReturn(film);
+        when(filmDAO.findOrCreate(idTmdb, titoloReale)).thenReturn(film);
 
-        facade.aggiungiFilmAllaWatchlist(1, 100, "Matrix");
+        facade.aggiungiFilmAllaWatchlist(1, idTmdb, titoloInput);
 
-        verify(filmDAO).findOrCreate(100, "Matrix");
+        verify(filmDAO).findOrCreate(idTmdb, titoloReale);
         verify(watchlistDAO).add(1, 10);
     }
 
@@ -200,24 +209,24 @@ public class FacadeTest {
 
     // -------- RECENSIONI --------
 
-
     @Test
     void findOrCreateFilm_shouldReturnFilm() {
+        // Setup Mocks
+        int idTmdb = 100;
+        String titoloReale = "Matrix Real";
 
         TmdbMovie movieMock = new TmdbMovie();
-        movieMock.title = "Matrix Real";
-        when(tmdbService.getMovieDetails(100)).thenReturn(movieMock);
-
+        movieMock.title = titoloReale;
+        when(tmdbService.getMovieDetails(idTmdb)).thenReturn(movieMock);
 
         Film filmAtteso = new Film();
-        filmAtteso.setTitolo("Matrix Real");
-        when(filmDAO.findOrCreate(100, "Matrix Real")).thenReturn(filmAtteso);
-
-        Film result = facade.findOrCreateFilm(100, "Matrix");
+        filmAtteso.setTitolo(titoloReale);
+        when(filmDAO.findOrCreate(idTmdb, titoloReale)).thenReturn(filmAtteso);
+        Film result = facade.findOrCreateFilm(idTmdb, "Matrix");
 
         assertNotNull(result);
-        assertEquals("Matrix Real", result.getTitolo());
-        verify(tmdbService).getMovieDetails(100);
+        assertEquals(titoloReale, result.getTitolo());
+        verify(tmdbService).getMovieDetails(idTmdb);
     }
 
     @Test
@@ -239,13 +248,25 @@ public class FacadeTest {
 
     @Test
     void getMediaVotiCommunity_shouldReturnAverage() {
-        Film filmMock = new Film();
-        filmMock.setIdFilm(50);
-        when(filmDAO.findOrCreate(eq(999), anyString())).thenReturn(filmMock);
-        when(recensioneDAO.getMediaVotiPerFilm(50)).thenReturn(4.5);
-        double media = facade.getMediaVotiCommunity(999);
-        assertEquals(4.5, media);
-        verify(recensioneDAO).getMediaVotiPerFilm(50);
-    }
+        // 1. SETUP DATI
+        int idTmdb = 999;
+        int idInterno = 50;
+        String titoloVero = "Titolo Certificato da TMDB";
 
+        TmdbMovie mockMovie = new TmdbMovie();
+        mockMovie.title = titoloVero;
+        when(tmdbService.getMovieDetails(idTmdb)).thenReturn(mockMovie);
+
+        Film filmMock = new Film();
+        filmMock.setIdFilm(idInterno);
+        when(filmDAO.findOrCreate(eq(idTmdb), eq(titoloVero))).thenReturn(filmMock);
+
+        when(recensioneDAO.getMediaVotiPerFilm(idInterno)).thenReturn(4.5);
+
+        double media = facade.getMediaVotiCommunity(idTmdb);
+
+        assertEquals(4.5, media);
+        verify(tmdbService).getMovieDetails(idTmdb);
+        verify(recensioneDAO).getMediaVotiPerFilm(idInterno);
+    }
 }
