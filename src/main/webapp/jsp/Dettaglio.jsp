@@ -5,6 +5,8 @@
 <%@ page import="model.UtenteRegistrato" %>
 <%@ page import="java.net.URLEncoder" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 
 <%
     TmdbMovie f = (TmdbMovie) request.getAttribute("filmDettaglio");
@@ -372,7 +374,7 @@
 
         <div class="stat-card">
             <div class="stat-label">Valutazione Utenti</div>
-            <div class="stat-value"><%= f.vote_average %></div>
+            <div class="stat-value"><fmt:formatNumber value="${votoCommunity}" maxFractionDigits="1" /> / 5⭐</div>
         </div>
 
         <div class="stat-card">

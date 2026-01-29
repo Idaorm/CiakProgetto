@@ -1,24 +1,40 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="model.UtenteRegistrato" %>
+<%@ page import="java.net.URLDecoder" %>
+<%@ page import="java.nio.charset.StandardCharsets" %>
+
 <%
-    // Controllo Sessione
+    // --- 1. CONTROLLO LOGIN ---
     UtenteRegistrato utente = (UtenteRegistrato) session.getAttribute("utente");
     if (utente == null) {
         response.sendRedirect(request.getContextPath() + "/jsp/Login.jsp");
         return;
     }
 
+    // --- 2. RECUPERO PARAMETRI ---
     String idTmdb = request.getParameter("idTmdb");
-    String titolo = request.getParameter("titolo");
 
-    // Recuperiamo i parametri di esito dalla Servlet
+    // PRENDIAMO IL TITOLO  COME SCRITTO NELL'URL
+    String titoloInput = request.getParameter("titolo");
+
     String esito = request.getParameter("esito");
     String msgErrore = request.getParameter("msg");
 
-    if (idTmdb == null || titolo == null) {
-        response.sendRedirect(request.getContextPath() + "/CatalogoServlet" +
-                "");
+    // Se mancano i dati fondamentali, rimandiamo al catalogo
+    if (idTmdb == null || idTmdb.isEmpty()) {
+        response.sendRedirect(request.getContextPath() + "/CatalogoServlet");
         return;
+    }
+
+    if (titoloInput == null) titoloInput = "Titolo Sconosciuto";
+
+    // Decodifica messaggio di errore (se presente)
+    if (msgErrore != null) {
+        try {
+            msgErrore = URLDecoder.decode(msgErrore, StandardCharsets.UTF_8.name());
+        } catch (Exception e) {
+            msgErrore = "Errore durante l'operazione.";
+        }
     }
 %>
 
@@ -27,7 +43,7 @@
 <head>
     <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/images/ciak.svg">
     <meta charset="UTF-8">
-    <title>Recensisci <%= titolo %></title>
+    <title>Recensisci <%= titoloInput %></title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
 
     <style>
@@ -40,7 +56,6 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            padding: 20px;
         }
 
         .review-container {
@@ -68,6 +83,10 @@
             color: #a0a0a0;
             margin-bottom: 30px;
             font-size: 16px;
+        }
+
+        .subtitle strong {
+            color: white;
         }
 
         .form-group {
@@ -130,7 +149,6 @@
             color: white;
         }
 
-
         .msg-box {
             padding: 15px;
             border-radius: 8px;
@@ -164,7 +182,8 @@
 
 <div class="review-container">
     <h2>La tua opinione conta</h2>
-    <p class="subtitle">Stai recensendo: <strong><%= titolo %></strong></p>
+
+    <p class="subtitle">Stai recensendo: <strong><%= titoloInput %></strong></p>
 
     <% if ("success".equals(esito)) { %>
     <div class="msg-box msg-success">
@@ -172,15 +191,18 @@
         <br>
         <a href="${pageContext.request.contextPath}/DettaglioServlet?idTmdb=<%= idTmdb %>" class="link-return">Torna alla scheda del film</a>
     </div>
+
     <% } else if ("errore".equals(esito)) { %>
     <div class="msg-box msg-error">
-        ⚠️ <%= (msgErrore != null) ? msgErrore : "Errore durante il salvataggio." %>
+        ⚠️ <%= msgErrore %>
     </div>
     <% } %>
+
+    <% if (!"success".equals(esito)) { %>
     <form action="${pageContext.request.contextPath}/RecensioneServlet" method="post">
 
         <input type="hidden" name="idTmdb" value="<%= idTmdb %>">
-        <input type="hidden" name="titolo" value="<%= titolo %>">
+        <input type="hidden" name="titolo" value="<%= titoloInput %>">
 
         <div class="form-group">
             <label for="rating">Voto (da 1 a 5)</label>
@@ -206,6 +228,7 @@
 
         <a href="javascript:history.back()" class="btn-cancel">Annulla e torna indietro</a>
     </form>
+    <% } %>
 </div>
 
 </body>

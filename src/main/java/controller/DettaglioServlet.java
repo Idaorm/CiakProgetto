@@ -61,6 +61,8 @@ public class DettaglioServlet extends HttpServlet {
                 // Recupero delle recensioni
                 LinkedHashMap<Recensione, UtenteRegistrato> recensioniMap = facade.getRecensioniPerFilm(idTmdb);
                 request.setAttribute("recensioniMap", recensioniMap);
+                double votoCommunity = facade.getMediaVotiCommunity(idTmdb);
+                request.setAttribute("votoCommunity", votoCommunity);
                 request.getRequestDispatcher("/jsp/Dettaglio.jsp").forward(request, response);
             } catch (NumberFormatException e) {
                 response.sendRedirect("CatalogoServlet");

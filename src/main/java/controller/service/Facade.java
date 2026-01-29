@@ -69,22 +69,21 @@ public class Facade {
     public Map<String, Object> getDatiProfiloCompleti(int idUtente) {
         Map<String, Object> dati = new HashMap<>();
         try {
-            // recupera utente
             UtenteRegistrato utente = utenteDAO.getUtenteById(idUtente);
             if (utente == null) {
                 dati.put("errore", "Utente non trovato");
                 return dati;
             }
             dati.put("utente", utente);
-            // conteggi
+
             int watchlistCount = utenteDAO.getWatchlistCount(idUtente);
             int recensioniCount = utenteDAO.getRecensioniCount(idUtente);
             dati.put("watchlistCount", watchlistCount);
             dati.put("recensioniCount", recensioniCount);
-            // watchlist dettagliata
+
             List<WatchlistItem> watchlist = watchlistDAO.findByUtente(idUtente);
             dati.put("watchlist", watchlist);
-            // dettagli TMDB dei film
+
             List<TmdbMovie> moviesApi = new ArrayList<>();
             if (watchlist != null) {
                 for (WatchlistItem item : watchlist) {
@@ -101,7 +100,7 @@ public class Facade {
                 }
             }
             dati.put("moviesApi", moviesApi);
-            // recensioni dell'utente
+
             LinkedHashMap<Recensione, String> recensioniMap = recensioneDAO.doRetrieveByUtente(idUtente);
             dati.put("recensioniMap", recensioniMap);
         } catch (SQLException e) {
@@ -111,48 +110,80 @@ public class Facade {
         return dati;
     }
 
-    // MODIFICA ACCOUNT
     public void aggiornaUtente(UtenteRegistrato utente) throws SQLException {
         utenteDAO.updateUtente(utente);
     }
 
-    // ELIMINA ACCOUNT
     public void eliminaUtente(int idUtente) throws SQLException {
         utenteDAO.deleteUtente(idUtente);
     }
 
-    // RICERCA UTENTI
     public List<UtenteRegistrato> cercaUtenti(String query) {
         return utenteDAO.cercaUtenti(query);
     }
 
-    // AGGIUNGI FILM ALLA WATCHLIST
-    public void aggiungiFilmAllaWatchlist(int idUtente, int idTmdb, String titolo) {
-        Film film = filmDAO.findOrCreate(idTmdb, titolo);
-        watchlistDAO.add(idUtente, film.getIdFilm());
+
+    public Film findOrCreateFilm(int tmdbId) {
+        // 1. Scarica info da TMDB
+        TmdbMovie movieApi = tmdbService.getMovieDetails(tmdbId);
+        String titoloReale = "Titolo Sconosciuto";
+
+        if (movieApi != null && movieApi.title != null) {
+            titoloReale = movieApi.title;
+        } else {
+            // Se l'API fallisce, l'ID potrebbe essere non valido
+            return null;
+        }
+
+        // 2. Salva o trova nel DB usando il titolo vero
+        return filmDAO.findOrCreate(tmdbId, titoloReale);
     }
 
-    // RIMUOVI FILM DALLA WATCHLIST
+    // Sovraccarico per compatibilità (ma usa la logica sicura)
+    public Film findOrCreateFilm(int tmdbId, String titoloFallback) {
+        Film f = findOrCreateFilm(tmdbId);
+        if (f == null && titoloFallback != null) {
+            // Solo se l'API fallisce usiamo il titolo passato
+            return filmDAO.findOrCreate(tmdbId, titoloFallback);
+        }
+        return f;
+    }
+
+    public void aggiungiFilmAllaWatchlist(int idUtente, int idTmdb, String titolo) {
+        // Usa il metodo sicuro
+        Film film = findOrCreateFilm(idTmdb);
+        if (film != null) {
+            watchlistDAO.add(idUtente, film.getIdFilm());
+        }
+    }
+
+    public double getMediaVotiCommunity(int idTmdb) {
+        // Usa il metodo sicuro (Basta TitoloPlaceholder!)
+        Film film = findOrCreateFilm(idTmdb);
+        if (film != null) {
+            return recensioneDAO.getMediaVotiPerFilm(film.getIdFilm());
+        }
+        return 0.0;
+    }
+
+    //--
+
     public void rimuoviFilmDallaWatchlist(int idItem) {
         watchlistDAO.remove(idItem);
     }
 
-    // CAMBIA STATO DEL FILM NELLA WATCHLIST
     public void toggleStatoWatchlistItem(int idItem, boolean statoAttuale) {
         watchlistDAO.toggleStatus(idItem, statoAttuale);
     }
 
-    // SEGNA FILM COME "VISTO"
     public void marcaComeVisto(int idUtente, int idFilm) {
         watchlistDAO.markAsWatched(idUtente, idFilm);
     }
 
-    // RECUPERA WATCHLIST DI UN UTENTE
     public List<WatchlistItem> getWatchlistItems(int idUtente) {
         return watchlistDAO.findByUtente(idUtente);
     }
 
-    // RECUPERA WATCHLIST DI UN UTENTE (DETTAGLIATA)
     public List<TmdbMovie> getWatchlistCompleta(int idUtente) {
         List<WatchlistItem> items = watchlistDAO.findByUtente(idUtente);
         List<TmdbMovie> moviesApi = new ArrayList<>();
@@ -171,17 +202,10 @@ public class Facade {
         return moviesApi;
     }
 
-    // RECUPERA RECENSIONI DI UN UTENTE
     public Map<Recensione, String> getRecensioniUtente(int idUtente) {
         return recensioneDAO.doRetrieveByUtente(idUtente);
     }
 
-    // TROVA FILM NEL DB
-    public Film findOrCreateFilm(int tmdbId, String titolo) {
-        return filmDAO.findOrCreate(tmdbId, titolo);
-    }
-
-    // SALVA NUOVA RECENSIONE
     public boolean salvaRecensione(Recensione r) throws SQLException {
         Recensione esistente = recensioneDAO.doRetrieveByUtenteAndFilm(r.getIdUtente(), r.getIdFilm());
         if (esistente != null) {
@@ -191,9 +215,7 @@ public class Facade {
         return true;
     }
 
-    // RECUPERA RECENSIONI DI UN FILM
     public LinkedHashMap<Recensione, UtenteRegistrato> getRecensioniPerFilm(int idTmdb) {
         return recensioneDAO.doRetrieveByTmdbId(idTmdb);
     }
-
 }

@@ -200,12 +200,24 @@ public class FacadeTest {
 
     // -------- RECENSIONI --------
 
+
     @Test
     void findOrCreateFilm_shouldReturnFilm() {
-        Film film = new Film();
-        when(filmDAO.findOrCreate(100, "Matrix")).thenReturn(film);
 
-        assertEquals(film, facade.findOrCreateFilm(100, "Matrix"));
+        TmdbMovie movieMock = new TmdbMovie();
+        movieMock.title = "Matrix Real";
+        when(tmdbService.getMovieDetails(100)).thenReturn(movieMock);
+
+
+        Film filmAtteso = new Film();
+        filmAtteso.setTitolo("Matrix Real");
+        when(filmDAO.findOrCreate(100, "Matrix Real")).thenReturn(filmAtteso);
+
+        Film result = facade.findOrCreateFilm(100, "Matrix");
+
+        assertNotNull(result);
+        assertEquals("Matrix Real", result.getTitolo());
+        verify(tmdbService).getMovieDetails(100);
     }
 
     @Test
@@ -223,6 +235,17 @@ public class FacadeTest {
 
         assertTrue(facade.salvaRecensione(r));
         verify(recensioneDAO).doSave(r);
+    }
+
+    @Test
+    void getMediaVotiCommunity_shouldReturnAverage() {
+        Film filmMock = new Film();
+        filmMock.setIdFilm(50);
+        when(filmDAO.findOrCreate(eq(999), anyString())).thenReturn(filmMock);
+        when(recensioneDAO.getMediaVotiPerFilm(50)).thenReturn(4.5);
+        double media = facade.getMediaVotiCommunity(999);
+        assertEquals(4.5, media);
+        verify(recensioneDAO).getMediaVotiPerFilm(50);
     }
 
 }

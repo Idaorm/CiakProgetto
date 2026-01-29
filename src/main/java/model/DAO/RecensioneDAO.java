@@ -112,4 +112,23 @@ public class RecensioneDAO {
         }
         return null;
     }
+
+    public double getMediaVotiPerFilm(int idFilm) {
+        String sql = "SELECT AVG(rating) as media FROM Recensione WHERE Id_film = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idFilm);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("media");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
 }
